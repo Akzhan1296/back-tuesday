@@ -14,11 +14,18 @@ const mongodb_1 = require("mongodb");
 const auth_service_1 = require("./auth-service");
 const users_db_repository_1 = require("../repositories/users-db-repository");
 exports.usersService = {
-    getAllUsers: (skip, limit) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield users_db_repository_1.usersRepository.getAllUsers(skip, limit);
-    }),
-    getAllUsersCount: () => __awaiter(void 0, void 0, void 0, function* () {
-        return yield users_db_repository_1.usersRepository.getAllUsersCount();
+    getUsers: (paginationParams) => __awaiter(void 0, void 0, void 0, function* () {
+        const { pageNumber, pageSize, skip } = paginationParams;
+        const users = yield users_db_repository_1.usersRepository.getAllUsers(skip, pageSize);
+        const totalCount = yield users_db_repository_1.usersRepository.getAllUsersCount();
+        const pagesCount = Math.ceil(totalCount / pageSize);
+        return {
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount,
+            pagesCount,
+            items: users.map(u => ({ id: u._id, login: u.login })),
+        };
     }),
     createUser: (userLogin, userPassword) => __awaiter(void 0, void 0, void 0, function* () {
         const passwordHash = yield auth_service_1.authService.generateHash(userPassword);

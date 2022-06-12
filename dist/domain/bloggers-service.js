@@ -13,30 +13,18 @@ exports.bloggersService = void 0;
 const utils_1 = require("../application/utils");
 const bloggers_db_repository_1 = require("../repositories/bloggers-db-repository");
 exports.bloggersService = {
-    getBloggers: (pageNumber, pageSize, searchNameTerm) => __awaiter(void 0, void 0, void 0, function* () {
-        let pn = 1;
-        let ps = 10;
-        let st = '';
-        if (pageNumber) {
-            pn = Number(pageNumber);
-        }
-        if (pageSize) {
-            ps = Number(pageSize);
-        }
-        if (searchNameTerm) {
-            st = searchNameTerm;
-        }
+    getBloggers: (paginationParams) => __awaiter(void 0, void 0, void 0, function* () {
+        const { pageNumber, pageSize, skip, searchNameTerm } = paginationParams;
         let filter = {};
-        if (st.length > 0) {
-            filter.name = new RegExp(st);
+        if (searchNameTerm.length > 0) {
+            filter.name = new RegExp(searchNameTerm);
         }
-        const skip = (pn - 1) * ps;
-        const bloggers = yield bloggers_db_repository_1.bloggersRepository.getBloggers(skip, ps, filter);
+        const bloggers = yield bloggers_db_repository_1.bloggersRepository.getBloggers(skip, pageSize, filter);
         const totalCount = yield bloggers_db_repository_1.bloggersRepository.getBloggersCount(filter);
-        const pagesCount = Math.ceil(totalCount / ps);
+        const pagesCount = Math.ceil(totalCount / pageSize);
         return {
-            page: pn,
-            pageSize: ps,
+            page: pageNumber,
+            pageSize: pageSize,
             totalCount,
             pagesCount,
             items: bloggers.map((b) => ((0, utils_1.transferIdToString)(b))),

@@ -17,22 +17,12 @@ const users_service_1 = require("../domain/users-service");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
 const input_validator_middleware_1 = require("../middlewares/input-validator-middleware");
 const object_id_middleware_1 = require("../middlewares/object-id-middleware");
+const pagination_middleware_1 = require("../middlewares/pagination-middleware");
 exports.usersRouter = (0, express_1.Router)({});
 // get all users
-exports.usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pageNumber = Number(req.query.PageNumber) || 1;
-    const pageSize = Number(req.query.PageSize) || 10;
-    const skip = (pageNumber - 1) * pageSize;
-    const users = yield users_service_1.usersService.getAllUsers(skip, pageSize);
-    const totalCount = yield users_service_1.usersService.getAllUsersCount();
-    const pagesCount = Math.ceil(totalCount / pageSize);
-    return res.status(200).send({
-        page: pageNumber,
-        pageSize: pageSize,
-        totalCount,
-        pagesCount,
-        items: users.map(u => ({ id: u._id, login: u.login })),
-    });
+exports.usersRouter.get('/', pagination_middleware_1.paginationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const usersWithPagination = yield users_service_1.usersService.getUsers(req.paginationParams);
+    return res.status(200).send(usersWithPagination);
 }));
 // create user with JWT
 exports.usersRouter.post('/', auth_middleware_1.authMiddleWare, input_validator_middleware_1.inputValidators.login, input_validator_middleware_1.inputValidators.password, input_validator_middleware_1.sumErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -1,16 +1,27 @@
 import { ObjectId } from 'mongodb';
 import { authService } from './auth-service';
-import { UserDBType, UserType } from '../types/types';
+import { PaginationParamsType, UserDBType, UserType } from '../types/types';
 import { usersRepository } from '../repositories/users-db-repository';
 
 
 export const usersService = {
-  getAllUsers: async (skip: number, limit: number): Promise<UserDBType[]> => {
-    return await usersRepository.getAllUsers(skip, limit);
+
+  getUsers: async (paginationParams: PaginationParamsType) => {
+    const { pageNumber, pageSize, skip } = paginationParams;
+
+    const users = await usersRepository.getAllUsers(skip, pageSize);
+    const totalCount = await usersRepository.getAllUsersCount();
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    return {
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount,
+      pagesCount,
+      items: users.map(u => ({ id: u._id, login: u.login })),
+    }
   },
-  getAllUsersCount: async () => {
-    return await usersRepository.getAllUsersCount();
-  },
+
   createUser: async (userLogin: string, userPassword: string): Promise<UserDBType> => {
     const passwordHash = await authService.generateHash(userPassword);
 
@@ -23,10 +34,10 @@ export const usersService = {
 
     return usersRepository.createUser(newUser);
   },
-  findUserById: async(id: ObjectId): Promise<UserDBType | null> => {
+  findUserById: async (id: ObjectId): Promise<UserDBType | null> => {
     return usersRepository.findById(id);
   },
-  deleteUser: async(id: ObjectId): Promise<boolean> => {
+  deleteUser: async (id: ObjectId): Promise<boolean> => {
     return usersRepository.deleteUser(id);
   }
 };

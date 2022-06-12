@@ -26,15 +26,14 @@ const posts_service_1 = require("../domain/posts-service");
 const input_validator_middleware_1 = require("../middlewares/input-validator-middleware");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
 const object_id_middleware_1 = require("../middlewares/object-id-middleware");
+const pagination_middleware_1 = require("../middlewares/pagination-middleware");
 const comments_service_1 = require("../domain/comments-service");
 const mongodb_1 = require("mongodb");
 const utils_1 = require("../application/utils");
 exports.postsRouter = (0, express_1.Router)({});
 //get all posts
-exports.postsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pageNumber = req.query.PageNumber;
-    const pageSize = req.query.PageSize;
-    const result = yield posts_service_1.postsService.getPosts(pageNumber, pageSize);
+exports.postsRouter.get('/', pagination_middleware_1.paginationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield posts_service_1.postsService.getPosts(req.paginationParams);
     res.status(200).send(result);
 }));
 //get POST by id
@@ -57,7 +56,6 @@ exports.postsRouter.post('/', auth_middleware_1.authMiddleWare, input_validator_
     const content = req.body.content;
     const bloggerId = req.body.bloggerId;
     const newPost = yield posts_service_1.postsService.createPost(title, shortDescription, content, bloggerId);
-    console.log(newPost);
     return res.status(201).send((0, utils_1.transferIdToString)(newPost));
 }));
 //update post
@@ -106,29 +104,15 @@ exports.postsRouter.post('/:id/comments', auth_middleware_1.userAuthMiddleware, 
     return res.status(404).send();
 }));
 // get selected post comments
-exports.postsRouter.get('/:id/comments', object_id_middleware_1.isValidIdMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.postsRouter.get('/:id/comments', object_id_middleware_1.isValidIdMiddleware, pagination_middleware_1.paginationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.isValidId)
         return res.status(404).send();
     const postId = new mongodb_1.ObjectId(req.params.id);
-    const pageNumber = Number(req.query.PageNumber) || 1;
-    const pageSize = Number(req.query.PageSize) || 10;
-    const skip = (pageNumber - 1) * pageSize;
-    const comments = yield comments_service_1.commentsService.getAllCommentsByPostId(postId, skip, pageSize);
-    const totalCount = yield comments_service_1.commentsService.getAllCountCommentsByPostId(postId);
-    const pagesCount = Math.ceil(totalCount / pageSize);
     let foundPost = yield posts_service_1.postsService.getPostById(postId);
     if (!foundPost) {
         return res.status(404).send();
     }
-    return res.status(200).send({
-        page: pageNumber,
-        pageSize: pageSize,
-        totalCount,
-        pagesCount,
-        items: comments.map((_a) => {
-            var { postId } = _a, rest = __rest(_a, ["postId"]);
-            return (0, utils_1.transferIdToString)(rest);
-        })
-    });
+    const commentsWithPagination = yield comments_service_1.commentsService.getCommentsByPostId(postId, req.paginationParams);
+    return res.status(200).send(commentsWithPagination);
 }));
 //# sourceMappingURL=posts-routers.js.map

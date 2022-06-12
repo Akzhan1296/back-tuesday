@@ -43,3 +43,10 @@ export type CommentWithPostId = WithId<{
   addedAt: Date,
   postId: string
 }>;
+
+export type PaginationParamsType = {
+  pageNumber: number,
+  pageSize: number,
+  skip: number,
+  searchNameTerm: string,
+}

@@ -13,22 +13,14 @@ exports.postsService = void 0;
 const utils_1 = require("../application/utils");
 const posts_db_repository_1 = require("../repositories/posts-db-repository");
 exports.postsService = {
-    getPosts: (pageNumber, pageSize) => __awaiter(void 0, void 0, void 0, function* () {
-        let pn = 1;
-        let ps = 10;
-        if (pageNumber) {
-            pn = Number(pageNumber);
-        }
-        if (pageSize) {
-            ps = Number(pageSize);
-        }
-        const skip = (pn - 1) * ps;
-        const posts = yield posts_db_repository_1.postsRepository.getPosts(skip, ps);
+    getPosts: (paginationParams) => __awaiter(void 0, void 0, void 0, function* () {
+        const { pageNumber, pageSize, skip } = paginationParams;
+        const posts = yield posts_db_repository_1.postsRepository.getPosts(skip, pageSize);
         const totalCount = yield posts_db_repository_1.postsRepository.getPostsCount({});
-        const pagesCount = Math.ceil(totalCount / ps);
+        const pagesCount = Math.ceil(totalCount / pageSize);
         return {
-            page: pn,
-            pageSize: ps,
+            page: pageNumber,
+            pageSize: pageSize,
             totalCount,
             pagesCount,
             items: posts.map(p => ((0, utils_1.transferIdToString)(p))),
@@ -37,22 +29,14 @@ exports.postsService = {
     getPostById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         return posts_db_repository_1.postsRepository.getPostById(id);
     }),
-    getPostByBloggerId: (bloggerId, pageNumber, pageSize) => __awaiter(void 0, void 0, void 0, function* () {
-        let pn = 1;
-        let ps = 10;
-        if (pageNumber) {
-            pn = Number(pageNumber);
-        }
-        if (pageSize) {
-            ps = Number(pageSize);
-        }
-        const skip = (pn - 1) * ps;
+    getPostByBloggerId: (bloggerId, paginationParams) => __awaiter(void 0, void 0, void 0, function* () {
+        const { pageNumber, pageSize, skip } = paginationParams;
         const totalCount = yield posts_db_repository_1.postsRepository.getPostsCount({ bloggerId });
-        const postsByBlogger = yield posts_db_repository_1.postsRepository.getPostByBloggerId(bloggerId, skip, ps);
-        const pagesCount = Math.ceil(totalCount / ps);
+        const postsByBlogger = yield posts_db_repository_1.postsRepository.getPostByBloggerId(bloggerId, skip, pageSize);
+        const pagesCount = Math.ceil(totalCount / pageSize);
         return {
-            page: pn,
-            pageSize: ps,
+            page: pageNumber,
+            pageSize: pageSize,
             totalCount,
             pagesCount,
             items: postsByBlogger ? postsByBlogger.map(p => (0, utils_1.transferIdToString)(p)) : [],

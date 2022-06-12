@@ -1,24 +1,23 @@
 import { Request, Response, Router } from "express";
 import { bloggersService } from "../domain/bloggers-service";
 import { postsService } from '../domain/posts-service';
-import { hasBloggerMiddleware, inputValidators, sumErrorsMiddleware } from '../middlewares/input-validator-middleware';
+import { inputValidators, sumErrorsMiddleware } from '../middlewares/input-validator-middleware';
 import { authMiddleWare } from "../middlewares/auth-middleware";
-import { QueryType } from '../types/types';
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
 import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
+import { paginationMiddleware } from "../middlewares/pagination-middleware";
+
 
 export const bloggersRouter = Router({});
 
 //get all bloggers
-bloggersRouter.get('/', async (req, res) => {
-  const pageNumber = req.query.PageNumber as QueryType;
-  const pageSize = req.query.PageSize as QueryType;
-  const searchNameTerm = req.query.SearchNameTerm as QueryType
-
-  const bloggers = await bloggersService.getBloggers(pageNumber, pageSize, searchNameTerm);
-  res.status(200).send(bloggers);
-});
+bloggersRouter.get('/',
+  paginationMiddleware,
+  async (req, res) => {
+    const bloggers = await bloggersService.getBloggers(req.paginationParams);
+    res.status(200).send(bloggers);
+  });
 
 //get blogger by id
 bloggersRouter.get('/:id',
@@ -28,7 +27,6 @@ bloggersRouter.get('/:id',
     if (!req.isValidId) return res.status(404).send();
 
     const bloggerId = new ObjectId(req.params.id);
-
     let foundBlogger = await bloggersService.getBloggerById(bloggerId)
 
     if (foundBlogger) {
@@ -42,17 +40,16 @@ bloggersRouter.get('/:id',
 //get specific blogger POSTS
 bloggersRouter.get('/:id/posts',
   isValidIdMiddleware,
+  paginationMiddleware,
   async (req, res) => {
 
     if (!req.isValidId) return res.status(404).send();
 
     const bloggerId = new ObjectId(req.params.id);
-    const pageNumber = req.query.PageNumber as QueryType;
-    const pageSize = req.query.PageSize as QueryType;
     let foundBlogger = await bloggersService.getBloggerById(bloggerId)
 
     if (foundBlogger) {
-      let posts = await postsService.getPostByBloggerId(bloggerId, pageNumber, pageSize);
+      let posts = await postsService.getPostByBloggerId(bloggerId, req.paginationParams);
       return res.status(200).send(posts);
     } else {
       return res.status(404).send();
@@ -112,7 +109,6 @@ bloggersRouter.put('/:id',
   async (req: Request, res: Response) => {
 
     if (!req.isValidId) return res.status(404).send();
-
 
     const bloggerId = new ObjectId(req.params.id);
     const name = req.body.name;

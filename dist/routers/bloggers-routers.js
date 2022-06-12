@@ -18,13 +18,11 @@ const auth_middleware_1 = require("../middlewares/auth-middleware");
 const mongodb_1 = require("mongodb");
 const utils_1 = require("../application/utils");
 const object_id_middleware_1 = require("../middlewares/object-id-middleware");
+const pagination_middleware_1 = require("../middlewares/pagination-middleware");
 exports.bloggersRouter = (0, express_1.Router)({});
 //get all bloggers
-exports.bloggersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pageNumber = req.query.PageNumber;
-    const pageSize = req.query.PageSize;
-    const searchNameTerm = req.query.SearchNameTerm;
-    const bloggers = yield bloggers_service_1.bloggersService.getBloggers(pageNumber, pageSize, searchNameTerm);
+exports.bloggersRouter.get('/', pagination_middleware_1.paginationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const bloggers = yield bloggers_service_1.bloggersService.getBloggers(req.paginationParams);
     res.status(200).send(bloggers);
 }));
 //get blogger by id
@@ -41,15 +39,13 @@ exports.bloggersRouter.get('/:id', object_id_middleware_1.isValidIdMiddleware, (
     }
 }));
 //get specific blogger POSTS
-exports.bloggersRouter.get('/:id/posts', object_id_middleware_1.isValidIdMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.bloggersRouter.get('/:id/posts', object_id_middleware_1.isValidIdMiddleware, pagination_middleware_1.paginationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.isValidId)
         return res.status(404).send();
     const bloggerId = new mongodb_1.ObjectId(req.params.id);
-    const pageNumber = req.query.PageNumber;
-    const pageSize = req.query.PageSize;
     let foundBlogger = yield bloggers_service_1.bloggersService.getBloggerById(bloggerId);
     if (foundBlogger) {
-        let posts = yield posts_service_1.postsService.getPostByBloggerId(bloggerId, pageNumber, pageSize);
+        let posts = yield posts_service_1.postsService.getPostByBloggerId(bloggerId, req.paginationParams);
         return res.status(200).send(posts);
     }
     else {

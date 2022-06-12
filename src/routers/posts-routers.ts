@@ -6,39 +6,38 @@ import {
   sumErrorsMiddleware
 } from '../middlewares/input-validator-middleware';
 import { authMiddleWare, userAuthMiddleware } from "../middlewares/auth-middleware";
-import {   isValidIdMiddleware } from "../middlewares/object-id-middleware";
+import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
+import { paginationMiddleware } from "../middlewares/pagination-middleware"
 import { CommentWithPostId, QueryType } from '../types/types';
 import { commentsService } from "../domain/comments-service";
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
 
-
 export const postsRouter = Router({});
 
 //get all posts
-postsRouter.get('/', async (req, res) => {
-  const pageNumber = req.query.PageNumber as QueryType;
-  const pageSize = req.query.PageSize as QueryType;
-
-  const result = await postsService.getPosts(pageNumber, pageSize);
-  res.status(200).send(result);
-});
+postsRouter.get('/',
+  paginationMiddleware,
+  async (req, res) => {
+    const result = await postsService.getPosts(req.paginationParams);
+    res.status(200).send(result);
+  });
 
 //get POST by id
-postsRouter.get('/:id', 
-isValidIdMiddleware,
-async (req, res) => {
-  if (!req.isValidId) return res.status(404).send();
+postsRouter.get('/:id',
+  isValidIdMiddleware,
+  async (req, res) => {
+    if (!req.isValidId) return res.status(404).send();
 
-  const postId = new ObjectId (req.params.id);
-  let foundPost = await postsService.getPostById(postId);
+    const postId = new ObjectId(req.params.id);
+    let foundPost = await postsService.getPostById(postId);
 
-  if (foundPost) {
-    return res.status(200).send(transferIdToString(foundPost));
-  } else {
-    return res.status(404).send();
-  }
-});
+    if (foundPost) {
+      return res.status(200).send(transferIdToString(foundPost));
+    } else {
+      return res.status(404).send();
+    }
+  });
 
 //create post
 postsRouter.post('/',
@@ -58,8 +57,6 @@ postsRouter.post('/',
 
     const newPost = await postsService.createPost(title, shortDescription, content, bloggerId);
 
-    console.log(newPost);
-
     return res.status(201).send(transferIdToString(newPost));
   });
 
@@ -76,7 +73,7 @@ postsRouter.put('/:id',
   async (req: Request, res: Response) => {
     if (!req.isValidId) return res.status(404).send();
 
-    const postId = new ObjectId (req.params.id);
+    const postId = new ObjectId(req.params.id);
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
@@ -98,7 +95,7 @@ postsRouter.delete('/:id',
   async (req: Request, res: Response) => {
     if (!req.isValidId) return res.status(404).send();
 
-    const postId = new ObjectId (req.params.id);
+    const postId = new ObjectId(req.params.id);
     const isDeleted = await postsService.deletePost(postId);
     if (isDeleted) {
       return res.send(204)
@@ -117,7 +114,7 @@ postsRouter.post('/:id/comments',
   async (req: Request, res: Response) => {
     if (!req.isValidId) return res.status(404).send();
 
-    const postId = new ObjectId (req.params.id);
+    const postId = new ObjectId(req.params.id);
     const comment = req.body.content;
     const user = req.user;
 
@@ -125,9 +122,9 @@ postsRouter.post('/:id/comments',
 
     if (foundPost) {
       const newComment: CommentWithPostId = await commentsService.createCommentForSelectedPost(comment, user.login, user._id, postId);
-      const {postId: postId2, ...params} = newComment;
+      const { postId: postId2, ...params } = newComment;
 
-      return res.status(201).send({params});
+      return res.status(201).send({ params });
     }
 
     return res.status(404).send();
@@ -136,32 +133,19 @@ postsRouter.post('/:id/comments',
 
 // get selected post comments
 postsRouter.get('/:id/comments',
-isValidIdMiddleware,
+  isValidIdMiddleware,
+  paginationMiddleware,
   async (req: Request, res: Response) => {
     if (!req.isValidId) return res.status(404).send();
 
-    const postId = new ObjectId (req.params.id);
-    const pageNumber = Number(req.query.PageNumber) || 1;
-    const pageSize = Number(req.query.PageSize) || 10;
-
-    const skip = (pageNumber - 1) * pageSize;
-
-    const comments = await commentsService.getAllCommentsByPostId(postId, skip, pageSize);
-    const totalCount = await commentsService.getAllCountCommentsByPostId(postId);
-    const pagesCount = Math.ceil(totalCount / pageSize);
-
+    const postId = new ObjectId(req.params.id);
     let foundPost = await postsService.getPostById(postId);
 
     if (!foundPost) {
       return res.status(404).send();
     }
 
-    return res.status(200).send({
-      page: pageNumber,
-      pageSize: pageSize,
-      totalCount,
-      pagesCount,
-      items: comments.map(({postId, ...rest}) => transferIdToString(rest))
-    })
+    const commentsWithPagination = await commentsService.getCommentsByPostId(postId, req.paginationParams);
+    return res.status(200).send(commentsWithPagination)
   }
 )

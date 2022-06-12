@@ -1,8 +1,26 @@
 import { ObjectId } from "mongodb";
+import { transferIdToString } from "../application/utils";
 import { commentsRepository } from "../repositories/comments-db-repositry";
-import { CommentDBType  } from "../types/types";
+import { CommentDBType, PaginationParamsType } from "../types/types";
 
 export const commentsService = {
+  getCommentsByPostId: async(postId: ObjectId, paginationParams: PaginationParamsType) => {
+    const { pageNumber, pageSize, skip } = paginationParams;
+
+    const comments = await commentsRepository.getAllComments(postId, skip, pageSize);
+    const totalCount = await commentsRepository.getAllCountCommentsByPostId(postId);
+
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    return {
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount,
+      pagesCount,
+      items: comments.map(({ postId, ...rest }) => transferIdToString(rest))
+    }
+
+  },
   createCommentForSelectedPost: async (content: string, userLogin: string, userId: ObjectId, postId: ObjectId) => {
     const newComment = {
       content,
@@ -13,14 +31,8 @@ export const commentsService = {
     }
     return commentsRepository.createCommentForSelectedPost(newComment);
   },
-  getAllCommentsByPostId: async (postId: ObjectId, skip: number, limit: number) => {
-    return await commentsRepository.getAllComments(postId, skip, limit);
-  },
   getAllPostsCount: async () => {
     return await commentsRepository.getAllPostsCount();
-  },
-  getAllCountCommentsByPostId: async(postId: ObjectId) => {
-    return await commentsRepository.getAllCountCommentsByPostId(postId);
   },
   getCommentById: async (id: ObjectId) => {
     return await commentsRepository.getCommentById(id);

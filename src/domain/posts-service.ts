@@ -1,28 +1,19 @@
 import { ObjectId } from 'mongodb';
 import { transferIdToString } from '../application/utils';
 import { postsRepository } from '../repositories/posts-db-repository';
-import { PostItemDBType, PostItemType, QueryType } from '../types/types';
+import { PaginationParamsType, PostItemDBType, PostItemType, QueryType } from '../types/types';
 
 export const postsService = {
-  getPosts: async (pageNumber: QueryType, pageSize: QueryType) => {
-    let pn = 1;
-    let ps = 10;
-    if (pageNumber) {
-      pn = Number(pageNumber);
-    }
-    if (pageSize) {
-      ps = Number(pageSize)
-    }
+  getPosts: async (paginationParams: PaginationParamsType) => {
+    const {pageNumber, pageSize, skip } = paginationParams;
 
-    const skip = (pn - 1) * ps;
-
-    const posts = await postsRepository.getPosts(skip, ps);
+    const posts = await postsRepository.getPosts(skip, pageSize);
     const totalCount = await postsRepository.getPostsCount({} as PostItemType);
-    const pagesCount = Math.ceil(totalCount / ps);
+    const pagesCount = Math.ceil(totalCount / pageSize);
 
     return {
-      page: pn,
-      pageSize: ps,
+      page: pageNumber,
+      pageSize: pageSize,
       totalCount,
       pagesCount,
       items: posts.map(p => (transferIdToString(p))),
@@ -31,25 +22,16 @@ export const postsService = {
   getPostById: async (id: ObjectId): Promise<PostItemDBType | null> => {
     return postsRepository.getPostById(id);
   },
-  getPostByBloggerId: async (bloggerId: ObjectId, pageNumber: QueryType, pageSize: QueryType) => {
-
-    let pn = 1;
-    let ps = 10;
-    if (pageNumber) {
-      pn = Number(pageNumber);
-    }
-    if (pageSize) {
-      ps = Number(pageSize)
-    }
-    const skip = (pn - 1) * ps;
+  getPostByBloggerId: async (bloggerId: ObjectId, paginationParams: PaginationParamsType) => {
+    const {pageNumber, pageSize, skip } = paginationParams;
 
     const totalCount = await postsRepository.getPostsCount({ bloggerId } as PostItemType);
-    const postsByBlogger = await postsRepository.getPostByBloggerId(bloggerId, skip, ps);
-    const pagesCount = Math.ceil(totalCount / ps);
+    const postsByBlogger = await postsRepository.getPostByBloggerId(bloggerId, skip, pageSize);
+    const pagesCount = Math.ceil(totalCount / pageSize);
 
     return {
-      page: pn,
-      pageSize: ps,
+      page: pageNumber,
+      pageSize: pageSize,
       totalCount,
       pagesCount,
       items: postsByBlogger ? postsByBlogger.map(p => transferIdToString(p)) : [],

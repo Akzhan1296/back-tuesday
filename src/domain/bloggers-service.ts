@@ -1,38 +1,25 @@
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
 import { bloggersRepository } from "../repositories/bloggers-db-repository";
-import { BloggerItemDBType, BloggerItemType, QueryType } from '../types/types';
+import { BloggerItemDBType, BloggerItemType, PaginationParamsType, QueryType } from '../types/types';
 
 export const bloggersService = {
-  getBloggers: async (pageNumber: QueryType, pageSize: QueryType, searchNameTerm: QueryType) => {
+  getBloggers: async (paginationParams: PaginationParamsType) => {
 
-    let pn = 1;
-    let ps = 10;
-    let st = '';
-
-    if (pageNumber) {
-      pn = Number(pageNumber);
-    }
-    if (pageSize) {
-      ps = Number(pageSize)
-    }
-    if (searchNameTerm) {
-      st = searchNameTerm as string;
-    }
+    const {pageNumber, pageSize, skip, searchNameTerm} = paginationParams;
 
     let filter = {} as BloggerItemType;
-    if (st.length > 0) {
-      filter.name = new RegExp(st) as unknown as string;
+    if (searchNameTerm.length > 0) {
+      filter.name = new RegExp(searchNameTerm) as unknown as string;
     }
 
-    const skip = (pn - 1) * ps;
-
-    const bloggers = await bloggersRepository.getBloggers(skip, ps, filter);
+    const bloggers = await bloggersRepository.getBloggers(skip, pageSize, filter);
     const totalCount = await bloggersRepository.getBloggersCount(filter);
-    const pagesCount = Math.ceil(totalCount / ps);
+    const pagesCount = Math.ceil(totalCount / pageSize);
+    
     return {
-      page: pn,
-      pageSize: ps,
+      page: pageNumber,
+      pageSize: pageSize,
       totalCount,
       pagesCount,
       items: bloggers.map((b) => (transferIdToString(b))),
