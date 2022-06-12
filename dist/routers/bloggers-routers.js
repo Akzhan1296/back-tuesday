@@ -8,17 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bloggersRouter = void 0;
 const express_1 = require("express");
@@ -72,8 +61,7 @@ exports.bloggersRouter.post('/', auth_middleware_1.authMiddleWare, input_validat
     const name = req.body.name;
     const youtubeUrl = req.body.youtubeUrl;
     const newBlogger = yield bloggers_service_1.bloggersService.createBlogger(name, youtubeUrl);
-    const { _id } = newBlogger, params = __rest(newBlogger, ["_id"]);
-    return res.status(201).send(Object.assign({ id: _id }, params));
+    return res.status(201).send((0, utils_1.transferIdToString)(newBlogger));
 }));
 // create POST for specific blogger 
 exports.bloggersRouter.post('/:id/posts', auth_middleware_1.authMiddleWare, input_validator_middleware_1.inputValidators.titleValidate, input_validator_middleware_1.inputValidators.content, input_validator_middleware_1.inputValidators.shortDescription, input_validator_middleware_1.sumErrorsMiddleware, object_id_middleware_1.isValidIdMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

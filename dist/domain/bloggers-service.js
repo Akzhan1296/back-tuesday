@@ -8,19 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bloggersService = void 0;
+const utils_1 = require("../application/utils");
 const bloggers_db_repository_1 = require("../repositories/bloggers-db-repository");
 exports.bloggersService = {
     getBloggers: (pageNumber, pageSize, searchNameTerm) => __awaiter(void 0, void 0, void 0, function* () {
@@ -49,10 +39,7 @@ exports.bloggersService = {
             pageSize: ps,
             totalCount,
             pagesCount,
-            items: bloggers.map((_a) => {
-                var { _id } = _a, params = __rest(_a, ["_id"]);
-                return (Object.assign({ id: _id }, params));
-            }),
+            items: bloggers.map((b) => ((0, utils_1.transferIdToString)(b))),
         };
     }),
     getBloggerById: (id) => __awaiter(void 0, void 0, void 0, function* () {

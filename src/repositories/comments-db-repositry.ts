@@ -7,7 +7,7 @@ export const commentsRepository = {
     await commentsCollection.insertOne(comment);
     return comment as CommentWithPostId;
   },
-  getAllComments: async (postId: string, skip: number, limit: number): Promise<CommentWithPostId[]> => {
+  getAllComments: async (postId: ObjectId, skip: number, limit: number): Promise<CommentWithPostId[]> => {
     return await commentsCollection.find({ postId }).skip(skip).limit(limit).toArray();
   },
   getAllPostsCount: async () => {
@@ -30,7 +30,7 @@ export const commentsRepository = {
     const result = await commentsCollection.updateOne({ _id: id }, { $set: comment });
     return result.matchedCount === 1
   },
-  getAllCountCommentsByPostId: async (postId: string) => {
+  getAllCountCommentsByPostId: async (postId: ObjectId) => {
     return await commentsCollection.count({ postId });
   }
 };

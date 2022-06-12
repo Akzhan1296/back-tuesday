@@ -99,9 +99,9 @@ exports.postsRouter.post('/:id/comments', auth_middleware_1.userAuthMiddleware, 
     const user = req.user;
     let foundPost = yield posts_service_1.postsService.getPostById(postId);
     if (foundPost) {
-        const newComment = yield comments_service_1.commentsService.createCommentForSelectedPost(comment, user.login, user._id, postIdByParams);
-        const { postId } = newComment, rest = __rest(newComment, ["postId"]);
-        return res.status(201).send((0, utils_1.transferIdToString)(rest));
+        const newComment = yield comments_service_1.commentsService.createCommentForSelectedPost(comment, user.login, user._id, postId);
+        const { postId: postId2 } = newComment, params = __rest(newComment, ["postId"]);
+        return res.status(201).send({ params });
     }
     return res.status(404).send();
 }));

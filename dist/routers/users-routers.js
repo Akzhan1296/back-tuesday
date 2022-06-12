@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRouter = void 0;
 const express_1 = require("express");
 const mongodb_1 = require("mongodb");
+const utils_1 = require("../application/utils");
 const users_service_1 = require("../domain/users-service");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
 const input_validator_middleware_1 = require("../middlewares/input-validator-middleware");
@@ -36,8 +37,7 @@ exports.usersRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, fun
 // create user with JWT
 exports.usersRouter.post('/', auth_middleware_1.authMiddleWare, input_validator_middleware_1.inputValidators.login, input_validator_middleware_1.inputValidators.password, input_validator_middleware_1.sumErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newUser = yield users_service_1.usersService.createUser(req.body.login, req.body.password);
-    const { login, _id } = newUser;
-    return res.status(201).send({ id: _id, login });
+    return res.status(201).send((0, utils_1.transferIdToString)(newUser));
 }));
 // delete user with JWT
 exports.usersRouter.delete('/:id', auth_middleware_1.authMiddleWare, object_id_middleware_1.isValidIdMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

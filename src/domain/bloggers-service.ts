@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { transferIdToString } from "../application/utils";
 import { bloggersRepository } from "../repositories/bloggers-db-repository";
 import { BloggerItemDBType, BloggerItemType, QueryType } from '../types/types';
 
@@ -34,7 +35,7 @@ export const bloggersService = {
       pageSize: ps,
       totalCount,
       pagesCount,
-      items: bloggers.map(({_id, ...params}) => ({id: _id, ...params})),
+      items: bloggers.map((b) => (transferIdToString(b))),
     }
   },
   getBloggerById: async (id: ObjectId): Promise<BloggerItemDBType | null> => {
