@@ -23,6 +23,9 @@ export type UserType = {
   login: string
   passwordHash: string
   createdAt: Date
+  confirmCode: ObjectId | null,
+  isConfirmed: boolean,
+  email: string,
 }
 
 export type UserDBType = WithId<UserType>

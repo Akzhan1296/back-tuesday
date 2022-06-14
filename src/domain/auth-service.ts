@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt'
+import { ObjectId } from 'mongodb';
+import { emailAdapter } from '../adapter/email-adapter';
 import { usersRepository } from '../repositories/users-db-repository';
 import { UserDBType, UserType } from '../types/types';
+import { usersService } from './users-service';
 
 
 export const authService = {
@@ -22,11 +25,26 @@ export const authService = {
       return null
     }
     let result = await bcrypt.compare(password, user.passwordHash)
-    console.log(password)
-    console.log(result)
     if (result) {
       return user;
     }
     return null
   },
+
+  async registration(email: string, login: string, password: string) {
+    const confirmCode = new ObjectId();
+    const newUser = await usersService.createUser(login, password, email, confirmCode);
+    if (newUser) {
+      await emailAdapter.sendEmail(email, 'Lesson05', `<a href="https://akzhanlesson04main.herokuapp.com?code=${confirmCode}">Confirm email</a>`)
+    }
+  },
+  async confirmRegistrationCode(code: ObjectId) {
+    usersService.confirmRegistrationCode(code)
+  },
+  async resendCode(email: string) {
+    const user = await usersService.findUserByEmail(email);
+    if(user){
+      await emailAdapter.sendEmail(email, 'Lesson05', `<a href="https://akzhanlesson04main.herokuapp.com?code=${user.confirmCode}">Confirm email</a>`)
+    }
+  }
 };

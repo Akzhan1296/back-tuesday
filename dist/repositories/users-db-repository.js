@@ -20,6 +20,10 @@ exports.usersRepository = {
         const user = yield db_1.usersCollection.findOne({ login });
         return user;
     }),
+    findUserByEmail: (email) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = yield db_1.usersCollection.findOne({ email });
+        return user;
+    }),
     findById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield db_1.usersCollection.findOne({ _id: id });
         return user;
@@ -33,6 +37,10 @@ exports.usersRepository = {
     deleteUser: (id) => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield db_1.usersCollection.deleteOne({ _id: id });
         return result.deletedCount === 1;
+    }),
+    confirmRegistrationCode: (code) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield db_1.usersCollection.updateOne({ confirmCode: code }, { $set: { isConfirmed: true } });
+        return result.matchedCount === 1;
     })
 };
 //# sourceMappingURL=users-db-repository.js.map

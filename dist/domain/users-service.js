@@ -27,21 +27,30 @@ exports.usersService = {
             items: users.map(u => ({ id: u._id, login: u.login })),
         };
     }),
-    createUser: (userLogin, userPassword) => __awaiter(void 0, void 0, void 0, function* () {
+    createUser: (userLogin, userPassword, email, confirmCode) => __awaiter(void 0, void 0, void 0, function* () {
         const passwordHash = yield auth_service_1.authService.generateHash(userPassword);
         const newUser = {
             _id: new mongodb_1.ObjectId(),
             login: userLogin,
             passwordHash,
             createdAt: new Date(),
+            confirmCode,
+            isConfirmed: false,
+            email
         };
         return users_db_repository_1.usersRepository.createUser(newUser);
     }),
     findUserById: (id) => __awaiter(void 0, void 0, void 0, function* () {
         return users_db_repository_1.usersRepository.findById(id);
     }),
+    findUserByEmail: (email) => __awaiter(void 0, void 0, void 0, function* () {
+        return users_db_repository_1.usersRepository.findUserByEmail(email);
+    }),
     deleteUser: (id) => __awaiter(void 0, void 0, void 0, function* () {
         return users_db_repository_1.usersRepository.deleteUser(id);
+    }),
+    confirmRegistrationCode: (code) => __awaiter(void 0, void 0, void 0, function* () {
+        return users_db_repository_1.usersRepository.confirmRegistrationCode(code);
     })
 };
 //# sourceMappingURL=users-service.js.map

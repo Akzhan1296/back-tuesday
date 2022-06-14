@@ -110,7 +110,6 @@ postsRouter.post('/:id/comments',
   inputValidators.comments,
   sumErrorsMiddleware,
   isValidIdMiddleware,
-
   async (req: Request, res: Response) => {
     if (!req.isValidId) return res.status(404).send();
 
@@ -126,7 +125,6 @@ postsRouter.post('/:id/comments',
 
       return res.status(201).send({ params });
     }
-
     return res.status(404).send();
   }
 )

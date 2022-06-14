@@ -24,7 +24,7 @@ exports.inputValidators = {
     comments: (0, express_validator_1.body)('content').trim().notEmpty().isLength({ min: 20, max: 300 }),
     bloggerId: (0, express_validator_1.body)('bloggerId').trim().notEmpty(),
     email: (0, express_validator_1.body)('email').trim().notEmpty().isLength({ max: 100 }).isEmail(),
-    code: (0, express_validator_1.body)('code').trim().notEmpty(),
+    code: (0, express_validator_1.body)('code').trim().matches(`/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i`),
 };
 const sumErrorsMiddleware = (req, res, next) => {
     const errors = (0, express_validator_1.validationResult)(req);

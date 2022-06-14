@@ -1,7 +1,10 @@
 import { Request, Response, Router } from "express";
+import { ObjectId } from "mongodb";
+import { emailAdapter } from "../adapter/email-adapter";
 import { jwtUtility } from "../application/jwt-utility";
 import { authService } from "../domain/auth-service";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
+
 
 export const authRouter = Router({});
 
@@ -21,20 +24,42 @@ authRouter.post('/registration',
   inputValidators.password,
   sumErrorsMiddleware,
   async (req: Request, res: Response) => {
+    const email = req.body.email;
+    const login = req.body.login;
+    const password = req.body.password;
+
+    await authService.registration(email, login, password);
+
     res.status(204).send();
   });
 
 authRouter.post('/registration-confirmation',
-  inputValidators.code,
+  // inputValidators.code,
   sumErrorsMiddleware,
   async (req: Request, res: Response) => {
-    res.status(204).send();
+    try {
+      const code = new ObjectId(req.body.code);
+      await authService.confirmRegistrationCode(code);
+      res.status(204).send();
+    } catch (err) {
+      res.status(400).json({
+        errorsMessages: [{
+          message: "bad value",
+          field: "code"
+        }],
+        resultCode: 1,
+      })
+    }
+
   });
 
 authRouter.post('/registration-email-resending',
   inputValidators.email,
   sumErrorsMiddleware,
   async (req: Request, res: Response) => {
+    const email = req.body.email;
+    await authService.resendCode(email);
+
     res.status(204).send();
   });
 

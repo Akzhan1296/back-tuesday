@@ -26,7 +26,7 @@ exports.usersRouter.get('/', pagination_middleware_1.paginationMiddleware, (req,
 }));
 // create user with JWT
 exports.usersRouter.post('/', auth_middleware_1.authMiddleWare, input_validator_middleware_1.inputValidators.login, input_validator_middleware_1.inputValidators.password, input_validator_middleware_1.sumErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const newUser = yield users_service_1.usersService.createUser(req.body.login, req.body.password);
+    const newUser = yield users_service_1.usersService.createUser(req.body.login, req.body.password, '', null);
     return res.status(201).send((0, utils_1.transferIdToString)(newUser));
 }));
 // delete user with JWT

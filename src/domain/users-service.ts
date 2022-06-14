@@ -22,7 +22,7 @@ export const usersService = {
     }
   },
 
-  createUser: async (userLogin: string, userPassword: string): Promise<UserDBType> => {
+  createUser: async (userLogin: string, userPassword: string, email: string, confirmCode: ObjectId | null,): Promise<UserDBType> => {
     const passwordHash = await authService.generateHash(userPassword);
 
     const newUser: UserDBType = {
@@ -30,6 +30,9 @@ export const usersService = {
       login: userLogin,
       passwordHash,
       createdAt: new Date(),
+      confirmCode,
+      isConfirmed: false,
+      email
     };
 
     return usersRepository.createUser(newUser);
@@ -37,7 +40,13 @@ export const usersService = {
   findUserById: async (id: ObjectId): Promise<UserDBType | null> => {
     return usersRepository.findById(id);
   },
+  findUserByEmail: async (email: string): Promise<UserDBType | null> => {
+    return usersRepository.findUserByEmail(email);
+  },
   deleteUser: async (id: ObjectId): Promise<boolean> => {
     return usersRepository.deleteUser(id);
+  },
+  confirmRegistrationCode: async (code: ObjectId): Promise<boolean> => {
+    return usersRepository.confirmRegistrationCode(code);
   }
 };
