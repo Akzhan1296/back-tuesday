@@ -28,11 +28,29 @@ export const hasUserMiddleware = async (req: Request, res: Response, next: NextF
   if (errors.length > 0) {
     res.status(400).json({
       errorsMessages: errors,
-      resultCode: 1,
     }).send();
     return;
   }
 
 
   next();
+}
+
+export const isUserAlreadyConfirmedMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  const email = req.body.email;
+
+  const getUserByEmail = await usersRepository.findUserByEmail(email);
+
+  if (!getUserByEmail || !getUserByEmail.confirmCode) {
+    next();
+    return;
+  }
+
+  return res.status(400).json({
+    errorsMessages: {
+      message: "user already exist",
+      field: "email"
+    }
+  }).send()
+
 }
