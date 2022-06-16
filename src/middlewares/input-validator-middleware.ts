@@ -47,5 +47,4 @@ export const hasBloggerMiddleware = async (req: Request, res: Response, next: Ne
     return;
   }
   next();
-
 }

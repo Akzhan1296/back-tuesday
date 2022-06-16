@@ -4,6 +4,7 @@ import { emailAdapter } from "../adapter/email-adapter";
 import { jwtUtility } from "../application/jwt-utility";
 import { authService } from "../domain/auth-service";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
+import { hasUserMiddleware } from "../middlewares/users-middleware";
 
 
 export const authRouter = Router({});
@@ -19,6 +20,7 @@ authRouter.post('/login', async (req: Request, res: Response) => {
 });
 
 authRouter.post('/registration',
+  hasUserMiddleware,
   inputValidators.email,
   inputValidators.login,
   inputValidators.password,
