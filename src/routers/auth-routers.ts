@@ -47,7 +47,8 @@ authRouter.post('/registration-confirmation',
         errorsMessages: [{
           message: "bad value",
           field: "code"
-        }]
+        }],
+        resultCode: 1,
       })
     }
 
