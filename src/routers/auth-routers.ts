@@ -43,12 +43,11 @@ authRouter.post('/registration-confirmation',
       await authService.confirmRegistrationCode(code);
       res.status(204).send();
     } catch (err) {
-      res.status(400).json({
+      res.status(400).send({
         errorsMessages: [{
           message: "bad value",
           field: "code"
-        }],
-        resultCode: 1,
+        }]
       })
     }
 

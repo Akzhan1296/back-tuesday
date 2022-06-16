@@ -26,9 +26,9 @@ export const hasUserMiddleware = async (req: Request, res: Response, next: NextF
   }
 
   if (errors.length > 0) {
-    res.status(400).json({
+    res.status(400).send({
       errorsMessages: errors,
-    }).send();
+    });
     return;
   }
 
@@ -46,11 +46,11 @@ export const isUserAlreadyConfirmedMiddleware = async (req: Request, res: Respon
     return;
   }
 
-  return res.status(400).json({
+  return res.status(400).send({
     errorsMessages: {
       message: "user already exist",
       field: "email"
     }
-  }).send()
+  })
 
 }
