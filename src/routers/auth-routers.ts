@@ -4,7 +4,7 @@ import { emailAdapter } from "../adapter/email-adapter";
 import { jwtUtility } from "../application/jwt-utility";
 import { authService } from "../domain/auth-service";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
-import { hasUserMiddleware } from "../middlewares/users-middleware";
+import { hasUserMiddleware, isUserAlreadyConfirmedMiddleware } from "../middlewares/users-middleware";
 
 
 export const authRouter = Router({});
@@ -36,8 +36,7 @@ authRouter.post('/registration',
   });
 
 authRouter.post('/registration-confirmation',
-  // inputValidators.code,
-  sumErrorsMiddleware,
+  hasUserMiddleware,
   async (req: Request, res: Response) => {
     try {
       const code = new ObjectId(req.body.code);
@@ -56,6 +55,8 @@ authRouter.post('/registration-confirmation',
   });
 
 authRouter.post('/registration-email-resending',
+  hasUserMiddleware,
+  isUserAlreadyConfirmedMiddleware,
   inputValidators.email,
   sumErrorsMiddleware,
   async (req: Request, res: Response) => {
