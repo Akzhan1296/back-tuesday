@@ -36,7 +36,7 @@ authRouter.post('/registration',
   });
 
 authRouter.post('/registration-confirmation',
-  hasUserMiddleware,
+  // hasUserMiddleware,
   async (req: Request, res: Response) => {
     try {
       const code = new ObjectId(req.body.code);
@@ -54,7 +54,7 @@ authRouter.post('/registration-confirmation',
   });
 
 authRouter.post('/registration-email-resending',
-  hasUserMiddleware,
+  // hasUserMiddleware,
   isUserAlreadyConfirmedMiddleware,
   inputValidators.email,
   sumErrorsMiddleware,
