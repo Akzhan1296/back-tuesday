@@ -5,9 +5,11 @@ import { jwtUtility } from "../application/jwt-utility";
 import { authService } from "../domain/auth-service";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
 import { hasUserMiddleware, isUserAlreadyConfirmedMiddleware } from "../middlewares/users-middleware";
-
+import { blockIpMiddleWare } from '../middlewares/block-ip-middleware';
 
 export const authRouter = Router({});
+
+authRouter.use(blockIpMiddleWare);
 
 authRouter.post('/login', async (req: Request, res: Response) => {
   const user = await authService.checkCredentials(req.body.login, req.body.password)

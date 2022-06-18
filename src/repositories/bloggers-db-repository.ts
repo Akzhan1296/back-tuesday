@@ -32,6 +32,9 @@ export const bloggersRepository = {
     const result = await bloggersCollection.deleteOne({ _id:id });
     return result.deletedCount === 1
   },
+  drop: async() => {
+    await bloggersCollection.drop();
+  }
 }
 
 

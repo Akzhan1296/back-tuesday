@@ -32,5 +32,8 @@ export const usersRepository = {
   confirmRegistrationCode: async (code: ObjectId): Promise<boolean> => {
     const result = await usersCollection.updateOne({ confirmCode: code }, { $set: { isConfirmed: true } });
     return result.matchedCount === 1
+  },
+  drop: async () => {
+    await usersCollection.drop();
   }
 };

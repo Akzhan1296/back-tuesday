@@ -1,17 +1,17 @@
-import express, { Request, Response} from 'express'
+import express, { Request, Response } from 'express'
 import cors from 'cors'
 import bodyParser from "body-parser";
 
 //routers
-import {bloggersRouter} from "./routers/bloggers-routers";
-import {postsRouter} from "./routers/posts-routers";
-import {authRouter} from './routers/auth-routers'
-import {usersRouter} from './routers/users-routers';
+import { bloggersRouter } from "./routers/bloggers-routers";
+import { postsRouter } from "./routers/posts-routers";
+import { authRouter } from './routers/auth-routers'
+import { usersRouter } from './routers/users-routers';
+import { deleteRouter } from './routers/delete-router';
 
 //middlewares
-import {blockIpMiddleWare} from './middlewares/block-ip-middleware';
-import {countRequestsMiddleWare} from './middlewares/counter-middleware';
-import {checkContentTypeMiddleWare} from './middlewares/content-type-check-middleware'
+import { countRequestsMiddleWare } from './middlewares/counter-middleware';
+import { checkContentTypeMiddleWare } from './middlewares/content-type-check-middleware'
 
 //dataBase
 import { runDb } from './repositories/db'
@@ -23,7 +23,6 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// app.use(blockIpMiddleWare);
 // app.use(countRequestsMiddleWare);
 // app.use(checkContentTypeMiddleWare('application/json'))
 
@@ -32,6 +31,9 @@ app.use('/users', usersRouter);
 app.use('/bloggers', bloggersRouter);
 app.use('/posts', postsRouter);
 app.use('/comments', commentsRouter);
+app.use('/testing', deleteRouter);
+
+
 
 const startApp = async () => {
     await runDb();

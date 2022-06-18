@@ -32,5 +32,8 @@ export const commentsRepository = {
   },
   getAllCountCommentsByPostId: async (postId: ObjectId) => {
     return await commentsCollection.count({ postId });
+  },
+  drop: async() => {
+    await commentsCollection.drop();
   }
 };
