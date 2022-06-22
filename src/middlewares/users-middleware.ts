@@ -11,12 +11,12 @@ export const hasUserMiddleware = async (req: Request, res: Response, next: NextF
   const getUserByLogin = await usersRepository.findByLogin(login);
   const getUserByEmail = await usersRepository.findUserByEmail(email);
 
-  // if (getUserByLogin) {
-  //   errors.push({
-  //     message: "user already exist",
-  //     field: "login"
-  //   })
-  // }
+  if (getUserByLogin) {
+    errors.push({
+      message: "user already exist",
+      field: "login"
+    })
+  }
 
   if (getUserByEmail) {
     errors.push({
@@ -47,10 +47,10 @@ export const isUserAlreadyConfirmedMiddleware = async (req: Request, res: Respon
   }
 
   return res.status(400).send({
-    errorsMessages: {
+    errorsMessages: [{
       message: "user already exist",
       field: "email"
-    }
+    }]
   })
 
 }
