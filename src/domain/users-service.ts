@@ -43,6 +43,9 @@ export const usersService = {
   findUserByEmail: async (email: string): Promise<UserDBType | null> => {
     return usersRepository.findUserByEmail(email);
   },
+  getUserByCode: async (confirmCode : ObjectId): Promise<UserDBType | null> => {
+    return usersRepository.getUserByCode(confirmCode);
+  },
   deleteUser: async (id: ObjectId): Promise<boolean> => {
     return usersRepository.deleteUser(id);
   },

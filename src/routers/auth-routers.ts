@@ -42,6 +42,18 @@ authRouter.post('/registration-confirmation',
   async (req: Request, res: Response) => {
     try {
       const code = new ObjectId(req.body.code);
+
+      const user = await authService.getUserByCode(code);
+
+      if (user && user.confirmCode) {
+        return res.status(400).send({
+          errorsMessages: [{
+            message: "bad value",
+            field: "code"
+          }]
+        })
+      }
+
       await authService.confirmRegistrationCode(code);
       res.status(204).send();
     } catch (err) {
@@ -56,7 +68,6 @@ authRouter.post('/registration-confirmation',
   });
 
 authRouter.post('/registration-email-resending',
-  // hasUserMiddleware,
   isUserAlreadyConfirmedMiddleware,
   inputValidators.email,
   sumErrorsMiddleware,

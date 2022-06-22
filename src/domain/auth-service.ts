@@ -41,6 +41,9 @@ export const authService = {
   async confirmRegistrationCode(code: ObjectId) {
     usersService.confirmRegistrationCode(code)
   },
+  async getUserByCode(confirmCode: ObjectId){
+    return usersService.getUserByCode(confirmCode);
+  },
   async resendCode(email: string) {
     const user = await usersService.findUserByEmail(email);
     if(user){

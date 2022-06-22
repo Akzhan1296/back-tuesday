@@ -19,6 +19,10 @@ export const usersRepository = {
     const user = await usersCollection.findOne({ _id: id })
     return user;
   },
+  getUserByCode: async (confirmCode: ObjectId): Promise<UserDBType | null> => {
+    const user = await usersCollection.findOne({ confirmCode })
+    return user;
+  },
   getAllUsers: async (skip: number, limit: number): Promise<UserDBType[]> => {
     return await usersCollection.find().skip(skip).limit(limit).toArray();
   },
