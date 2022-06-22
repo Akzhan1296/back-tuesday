@@ -3,35 +3,30 @@ import { usersRepository } from "../repositories/users-db-repository";
 
 export const hasUserMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-  const errors = [];
-
   const email = req.body.email;
   const login = req.body.login;
 
   const getUserByLogin = await usersRepository.findByLogin(login);
-  const getUserByEmail = await usersRepository.findUserByEmail(email);
 
   if (getUserByLogin) {
-    errors.push({
-      message: "user already exist",
-      field: "login"
-    })
+    return res.status(400).send({
+      errorsMessages: [{
+        message: "user already exist",
+        field: "login"
+      }],
+    });
   }
+
+  const getUserByEmail = await usersRepository.findUserByEmail(email);
 
   if (getUserByEmail) {
-    errors.push({
-      message: "user already exist",
-      field: "email"
-    })
-  }
-
-  if (errors.length > 0) {
-    res.status(400).send({
-      errorsMessages: errors,
+    return res.status(400).send({
+      errorsMessages: [{
+        message: "user already exist",
+        field: "email"
+      }],
     });
-    return;
   }
-
 
   next();
 }
