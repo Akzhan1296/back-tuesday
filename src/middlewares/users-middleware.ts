@@ -10,10 +10,10 @@ export const hasUserMiddleware = async (req: Request, res: Response, next: NextF
 
   if (getUserByLogin) {
     return res.status(400).send({
-      errorsMessages: {
+      errorsMessages: [{
         message: "user already exist",
         field: "login"
-      },
+      }],
     });
   }
 
@@ -21,10 +21,10 @@ export const hasUserMiddleware = async (req: Request, res: Response, next: NextF
 
   if (getUserByEmail) {
     return res.status(400).send({
-      errorsMessages: {
+      errorsMessages: [{
         message: "user already exist",
         field: "email"
-      },
+      }],
     });
   }
 
@@ -36,16 +36,16 @@ export const isUserAlreadyConfirmedMiddleware = async (req: Request, res: Respon
 
   const getUserByEmail = await usersRepository.findUserByEmail(email);
 
-  if (getUserByEmail && getUserByEmail.confirmCode) {
-    return res.status(400).send({
-      errorsMessages: [{
-        message: "user already exist",
-        field: "email"
-      }]
-    })
+  if (!getUserByEmail || !getUserByEmail.confirmCode) {
+    next();
+    return;
   }
 
-  next();
-  return;
+  return res.status(400).send({
+    errorsMessages: [{
+      message: "user already exist",
+      field: "email"
+    }]
+  })
 
 }

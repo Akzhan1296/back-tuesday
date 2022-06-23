@@ -10,23 +10,37 @@ export const deleteRouter = Router({});
 deleteRouter.delete('/all-data', async (req: Request, res: Response) => {
 
     const db = await client.db('06');
-    const list = await db.listCollections().toArray()
 
-    if (list.includes('ips')) {
-        await db.collection('ips').drop();
-    }
-    if (list.includes('posts')) {
-        await db.collection('posts').drop();
-    }
-    if (list.includes('bloggers')) {
-        await db.collection('bloggers').drop();
-    }
-    if (list.includes('users')) {
-        await db.collection('users').drop();
-    }
-    if (list.includes('comments')) {
-        await db.collection('comments').drop();
-    }
+    // db.dropDatabase();
+    const list = await db.listCollections().toArray()
+    const collectionNames = ['ips', 'posts', 'bloggers', 'users', 'comments'];
+
+    console.log(list);
+
+
+    list.forEach((l: any) => {
+        collectionNames.forEach(collectionName => {
+            if (l.name.includes(collectionName)) {
+                db.collection(collectionName).remove({});
+            }
+        })
+    })
+
+    // if (list.includes('ips')) {
+    //     await db.collection('ips').remove({});
+    // }
+    // if (list.includes('posts')) {
+    //     await db.collection('posts').remove({});
+    // }
+    // if (list.includes('bloggers')) {
+    //     await db.collection('bloggers').remove({});
+    // }
+    // if (list.includes('users')) {
+    //     await db.collection('users').remove({});
+    // }
+    // if (list.includes('comments')) {
+    //     await db.collection('comments').remove({});
+    // }
 
     return res.status(204).send();
 })
