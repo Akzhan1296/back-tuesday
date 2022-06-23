@@ -44,6 +44,7 @@ authRouter.post('/registration-confirmation',
 
     const code = new ObjectId(req.body.code);
     const user = await authService.getUserByCode(code);
+    console.log(user);
 
     if (user && user.isConfirmed) {
       return res.status(400).send({
