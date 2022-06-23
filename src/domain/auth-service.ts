@@ -35,7 +35,7 @@ export const authService = {
     const confirmCode = new ObjectId();
     const newUser = await usersService.createUser(login, password, email, confirmCode);
     if (newUser) {
-      await emailAdapter.sendEmail(email, 'Lesson05', `<a href="https://akzhanlesson04main.herokuapp.com?code=${confirmCode}">Confirm email</a>`)
+      await emailAdapter.sendEmail(email, 'Lesson05', `<a href="http://localhost:3000/?code=${confirmCode}">Confirm email</a>`)
     }
   },
   async confirmRegistrationCode(code: ObjectId) {

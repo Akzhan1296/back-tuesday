@@ -38,12 +38,12 @@ authRouter.post('/registration',
   });
 
 authRouter.post('/registration-confirmation',
-  // hasUserMiddleware,
   async (req: Request, res: Response) => {
     try {
       const code = new ObjectId(req.body.code);
 
       const user = await authService.getUserByCode(code);
+      console.log(user);
 
       if (user && user.confirmCode) {
         return res.status(400).send({
