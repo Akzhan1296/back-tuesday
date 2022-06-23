@@ -26,7 +26,6 @@ export const sumErrorsMiddleware = (req: Request, res: Response, next: NextFunct
         message: er.msg,
         field: er.param
       })),
-      resultCode: 1
     }).send();
   }
   next();
@@ -42,7 +41,6 @@ export const hasBloggerMiddleware = async (req: Request, res: Response, next: Ne
         message: "not found blogger",
         field: "bloggerId"
       }],
-      resultCode: 1,
     })
     return;
   }

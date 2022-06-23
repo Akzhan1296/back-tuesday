@@ -5,7 +5,6 @@ export const checkContentTypeMiddleWare = (typeContent: string) => (req: Request
   if (contype !== typeContent) {
     return res.status(400).send({
       "errorsMessages": "Bad content type content type",
-      "resultCode": 1
     });
   } else {
     next();
