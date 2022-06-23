@@ -7,7 +7,7 @@ export const ipRepostitory = {
     //await ipCollections.drop({ ip, date: [date] });
   },
   findIp: async (ip: string, path: string, dateLeft: number, dateRight: number) => {
-    const result = await ipCollections.find({ ip, path, date: { $gt: dateLeft, $lt: dateRight } }).toArray();
+    const result = await ipCollections.find({ ip, path, date: { $gte: dateLeft, $lte: dateRight } }).toArray();
     return result;
   },
 
