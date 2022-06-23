@@ -15,7 +15,7 @@ export const inputValidators = {
   comments: body('content').trim().notEmpty().isLength({min: 20, max: 300}),
   bloggerId: body('bloggerId').trim().notEmpty(),
   email: body('email').trim().notEmpty().isLength({ max: 100 }).isEmail(),
-  code: body('code').trim().matches(`/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i`),
+  code: body('code').isMongoId(),
 };
 
 export const sumErrorsMiddleware = (req: Request, res: Response, next: NextFunction) => {
