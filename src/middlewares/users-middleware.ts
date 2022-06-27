@@ -36,16 +36,16 @@ export const isUserAlreadyConfirmedMiddleware = async (req: Request, res: Respon
 
   const getUserByEmail = await usersRepository.findUserByEmail(email);
 
-  if (!getUserByEmail || !getUserByEmail.confirmCode) {
-    next();
-    return;
+  if (getUserByEmail && getUserByEmail.isConfirmed) {
+    return res.status(400).send({
+      errorsMessages: [{
+        message: "user already confirmed email",
+        field: "email"
+      }]
+    })
   }
 
-  return res.status(400).send({
-    errorsMessages: [{
-      message: "user already exist",
-      field: "email"
-    }]
-  })
+  next();
+  return;
 
 }
