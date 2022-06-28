@@ -40,6 +40,9 @@ export const usersService = {
   findUserById: async (id: ObjectId): Promise<UserDBType | null> => {
     return usersRepository.findById(id);
   },
+  updateCode: async (email: string, code: ObjectId): Promise<boolean> => {
+    return usersRepository.updateCode(email, code);
+  },
   findUserByEmail: async (email: string): Promise<UserDBType | null> => {
     return usersRepository.findUserByEmail(email);
   },

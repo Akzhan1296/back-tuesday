@@ -15,6 +15,10 @@ export const usersRepository = {
     const user = await usersCollection.findOne({ email });
     return user;
   },
+  updateCode: async (email: string, code: ObjectId): Promise<boolean> => {
+    const result = await usersCollection.updateOne({ email }, { $set: { confirmCode: code } });
+    return result.matchedCount === 1
+  },
   findById: async (id: ObjectId): Promise<UserDBType | null> => {
     const user = await usersCollection.findOne({ _id: id })
     return user;

@@ -41,13 +41,15 @@ export const authService = {
   async confirmRegistrationCode(code: ObjectId) {
     usersService.confirmRegistrationCode(code)
   },
-  async getUserByCode(confirmCode: ObjectId){
+  async getUserByCode(confirmCode: ObjectId) {
     return usersService.getUserByCode(confirmCode);
   },
   async resendCode(email: string) {
     const user = await usersService.findUserByEmail(email);
-    if(user){
-      await emailAdapter.sendEmail(email, 'Lesson05', `<a href="https://akzhanlesson04main.herokuapp.com?code=${user.confirmCode}">Confirm email</a>`)
+    const confirmCode = new ObjectId();
+    if (user) {
+      await emailAdapter.sendEmail(email, 'Lesson05', `<a href="https://akzhanlesson04main.herokuapp.com?code=${confirmCode}">Confirm email</a>`)
+      await usersService.updateCode(email, confirmCode);
     }
   }
 };
