@@ -121,9 +121,12 @@ postsRouter.post('/:id/comments',
 
     if (foundPost) {
       const newComment: CommentWithPostId = await commentsService.createCommentForSelectedPost(comment, user.login, user._id, postId);
+      
+      console.log(newComment);
+      
       const { postId: postId2, ...params } = newComment;
 
-      return res.status(201).send({ params });
+      return res.status(201).send(transferIdToString(params));
     }
     return res.status(404).send();
   }
