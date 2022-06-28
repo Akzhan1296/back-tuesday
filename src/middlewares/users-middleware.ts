@@ -45,6 +45,16 @@ export const isUserAlreadyConfirmedMiddleware = async (req: Request, res: Respon
     })
   }
 
+  if (!getUserByEmail) {
+    return res.status(400).send({
+      errorsMessages: [{
+        message: "user does not exist",
+        field: "email"
+      }]
+    })
+  }
+
+
   next();
   return;
 
