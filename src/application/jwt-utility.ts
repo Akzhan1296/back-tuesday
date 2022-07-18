@@ -9,11 +9,22 @@ export const jwtUtility = {
    * @return Returns JWT-token
    */
   async createJWT(user: UserDBType) {
-    console.log('user', user)
     const payload = { userId: user._id }
     const secretOrPrivateKey = settings.JWT_SECRET;
     const options: SignOptions = {
-      expiresIn: '1d',
+      expiresIn: '10seconds',
+    }
+
+    const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
+
+    return jwtToken
+  },
+
+  async createRefreshJWT(user: UserDBType) {
+    const payload = { userId: user._id }
+    const secretOrPrivateKey = settings.JWT_SECRET;
+    const options: SignOptions = {
+      expiresIn: '20seconds',
     }
 
     const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)

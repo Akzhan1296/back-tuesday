@@ -6,6 +6,7 @@ import { authService } from "../domain/auth-service";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
 import { hasUserMiddleware, isUserAlreadyConfirmedMiddleware } from "../middlewares/users-middleware";
 import { blockIpMiddleWare } from '../middlewares/block-ip-middleware';
+import { userAuthMiddleware } from "../middlewares/auth-middleware";
 
 export const authRouter = Router({});
 
@@ -15,9 +16,12 @@ authRouter.post('/login', async (req: Request, res: Response) => {
   const user = await authService.checkCredentials(req.body.login, req.body.password)
   if (user) {
     const token = await jwtUtility.createJWT(user)
-    res.status(200).send({ token });
+    const refreshToken = await jwtUtility.createRefreshJWT(user);
+
+    res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
+    res.status(200).send({ accessToken: token });
   } else {
-    res.sendStatus(401)
+    res.sendStatus(401);
   }
 });
 
@@ -70,3 +74,13 @@ authRouter.post('/registration-email-resending',
     res.status(204).send();
   });
 
+authRouter.get('/me', userAuthMiddleware, async (req: Request, res: Response) => {
+  const user = req.user;
+
+  const { login, email, _id } = user;
+
+  res.status(200).send({
+    login, email, id: _id
+  });
+
+});

@@ -20,7 +20,6 @@ export const authService = {
    */
   async checkCredentials(userLogin: string, password: string): Promise<UserDBType | null> {
     let user = await usersRepository.findByLogin(userLogin);
-    console.log(user);
     if (!user) {
       return null
     }
