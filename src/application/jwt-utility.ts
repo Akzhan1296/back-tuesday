@@ -9,10 +9,10 @@ export const jwtUtility = {
    * @return Returns JWT-token
    */
   async createJWT(user: UserDBType) {
-    const payload = { userId: user._id }
+    const payload = { userId: user._id, isAccess: true }
     const secretOrPrivateKey = settings.JWT_SECRET;
     const options: SignOptions = {
-      expiresIn: '10seconds',
+      expiresIn: '5 minutes',
     }
 
     const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
@@ -21,10 +21,14 @@ export const jwtUtility = {
   },
 
   async createRefreshJWT(user: UserDBType) {
-    const payload = { userId: user._id }
+    const payload = {
+      userId: user._id,
+      tokenId: new ObjectId(),
+
+    }
     const secretOrPrivateKey = settings.JWT_SECRET;
     const options: SignOptions = {
-      expiresIn: '20seconds',
+      expiresIn: '10 minutes',
     }
 
     const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
@@ -39,6 +43,18 @@ export const jwtUtility = {
         return null
       }
       return new ObjectId(result.userId)
+    } catch (error) {
+      return null
+    }
+  },
+
+  async extractPayloadFromRefreshToken(token: string): Promise<any> {
+    try {
+      const result: any = jwt.verify(token, settings.JWT_SECRET)
+      if (!result) {
+        return null
+      }
+      return result;
     } catch (error) {
       return null
     }

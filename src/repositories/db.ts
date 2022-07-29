@@ -8,6 +8,7 @@ export const bloggersCollection = client.db('06').collection('bloggers');
 export const usersCollection = client.db('06').collection('users');
 export const commentsCollection = client.db('06').collection('comments');
 export const ipCollections = client.db('06').collection('ips');
+export const refreshTokensCollections = client.db('06').collection('refresh');
 
 export async function runDb() {
   client.connect(async (err: any) => {

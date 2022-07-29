@@ -6,7 +6,8 @@ import { authService } from "../domain/auth-service";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
 import { hasUserMiddleware, isUserAlreadyConfirmedMiddleware } from "../middlewares/users-middleware";
 import { blockIpMiddleWare } from '../middlewares/block-ip-middleware';
-import { userAuthMiddleware } from "../middlewares/auth-middleware";
+import { userAuthMiddleware, userRefreshMiddleware } from "../middlewares/auth-middleware";
+import { jwtService } from "../domain/jwt-service";
 
 export const authRouter = Router({});
 
@@ -18,8 +19,17 @@ authRouter.post('/login', async (req: Request, res: Response) => {
     const token = await jwtUtility.createJWT(user)
     const refreshToken = await jwtUtility.createRefreshJWT(user);
 
-    res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
-    res.status(200).send({ accessToken: token });
+    const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshToken);
+
+    if (payload) {
+      const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
+      if (successfullyAddedRefreshToken) {
+        res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
+        res.status(200).send({ accessToken: token });
+      }
+    }
+
+
   } else {
     res.sendStatus(401);
   }
@@ -48,7 +58,6 @@ authRouter.post('/registration-confirmation',
 
     const code = new ObjectId(req.body.code);
     const user = await authService.getUserByCode(code);
-    console.log(user);
 
     if (user && user.isConfirmed) {
       return res.status(400).send({
@@ -70,17 +79,42 @@ authRouter.post('/registration-email-resending',
   async (req: Request, res: Response) => {
     const email = req.body.email;
     await authService.resendCode(email);
-
     res.status(204).send();
   });
 
 authRouter.get('/me', userAuthMiddleware, async (req: Request, res: Response) => {
   const user = req.user;
-
   const { login, email, _id } = user;
 
   res.status(200).send({
     login, email, id: _id
   });
+
+});
+
+authRouter.post('/refresh-token', userRefreshMiddleware, async (req: Request, res: Response) => {
+  const user = req.user;
+  const tokenId = req.tokenId;
+
+  const deleted = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
+
+  console.log('deleted', deleted);
+
+  if (deleted) {
+    const token = await jwtUtility.createJWT(user)
+    const refreshToken = await jwtUtility.createRefreshJWT(user);
+
+    const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshToken);
+
+    console.log('Payload', payload)
+    if (payload) {
+      const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
+      console.log('successfullyAddedRefreshToken',successfullyAddedRefreshToken)
+      if (successfullyAddedRefreshToken) {
+        res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
+        res.status(200).send({ accessToken: token });
+      }
+    }
+  }
 
 });

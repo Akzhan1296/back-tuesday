@@ -53,3 +53,9 @@ export type PaginationParamsType = {
   skip: number,
   searchNameTerm: string,
 }
+
+export type RefeshTokenType = {
+  userId: ObjectId,
+  tokenId: ObjectId,
+  exp: number,
+}

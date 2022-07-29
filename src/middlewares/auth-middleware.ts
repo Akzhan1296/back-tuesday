@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import { ObjectId } from "mongodb";
 import { jwtUtility } from "../application/jwt-utility";
+import { jwtService } from "../domain/jwt-service";
 import { usersService } from "../domain/users-service";
 
 export const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
@@ -38,3 +40,30 @@ export const userAuthMiddleware = async (req: Request, res: Response, next: Next
 
   res.send(401)
 };
+
+export const userRefreshMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.headers.authorization) {
+    res.sendStatus(401)
+    return
+  }
+
+  const token = req.headers.authorization.split(' ')[1];
+  const userId = await jwtUtility.extractUserIdFromToken(token);
+  const { tokenId } = await jwtUtility.extractPayloadFromRefreshToken(token);
+
+  console.log('tokenId', tokenId)
+  const refreshToken = await jwtService.getRefreshToken(new ObjectId(tokenId));
+  console.log('userId', userId);
+  console.log('refresh', refreshToken)
+
+  if (userId && refreshToken) {
+    const user = await usersService.findUserById(userId);
+    req.user = user;
+    req.tokenId = tokenId;
+    next();
+    return;
+  }
+
+  res.send(401)
+};
+
