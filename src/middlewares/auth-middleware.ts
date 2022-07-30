@@ -42,7 +42,7 @@ export const userAuthMiddleware = async (req: Request, res: Response, next: Next
 };
 
 export const userRefreshMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.headers.authorization) {
+  if (!req.cookies.refreshToken) {
     res.sendStatus(401)
     return
   }
@@ -62,6 +62,6 @@ export const userRefreshMiddleware = async (req: Request, res: Response, next: N
     return;
   }
 
-  res.send(401)
+  return res.send(401)
 };
 

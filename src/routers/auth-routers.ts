@@ -85,7 +85,7 @@ authRouter.get('/me', userAuthMiddleware, async (req: Request, res: Response) =>
   const { login, email, _id } = user;
 
   res.status(200).send({
-    login, email, id: _id
+    login, email, userId: _id
   });
 
 });
@@ -94,11 +94,11 @@ authRouter.post('/refresh-token', userRefreshMiddleware, async (req: Request, re
   const user = req.user;
   const tokenId = req.tokenId;
 
-  const deleted = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
+  const deletedOldRefresh = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
 
-  console.log('deleted', deleted);
+  console.log('deleted', deletedOldRefresh);
 
-  if (deleted) {
+  if (deletedOldRefresh) {
     const token = await jwtUtility.createJWT(user)
     const refreshToken = await jwtUtility.createRefreshJWT(user);
 
