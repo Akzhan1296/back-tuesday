@@ -111,6 +111,7 @@ authRouter.post('/refresh-token', userRefreshMiddleware, async (req: Request, re
       if (successfullyAddedRefreshToken) {
         res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
         res.status(200).send({ accessToken: token });
+        return;
       }
     }
     res.status(401).send();
