@@ -52,15 +52,19 @@ export const userRefreshMiddleware = async (req: Request, res: Response, next: N
   console.log(req.cookies);
   console.log('RF',refreshTokenFromCookie);
   const userId = await jwtUtility.extractUserIdFromToken(refreshTokenFromCookie);
-  const { tokenId } = await jwtUtility.extractPayloadFromRefreshToken(refreshTokenFromCookie);
+  const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshTokenFromCookie);
 
-  const refreshTokenFromDB = await jwtService.getRefreshToken(new ObjectId(tokenId));
+  if(!payload){
+    return res.sendStatus(401);
+  }
+
+  const refreshTokenFromDB = await jwtService.getRefreshToken(new ObjectId(payload.tokenId));
 
 
   if (userId && refreshTokenFromDB) {
     const user = await usersService.findUserById(userId);
     req.user = user;
-    req.tokenId = tokenId;
+    req.tokenId = payload.tokenId;
     next();
     return;
   }
