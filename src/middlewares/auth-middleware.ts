@@ -48,6 +48,9 @@ export const userRefreshMiddleware = async (req: Request, res: Response, next: N
   }
 
   const refreshTokenFromCookie = req.cookies.refreshToken.split(' ')[1];
+  console.log(req.headers);
+  console.log(req.cookies);
+  console.log('RF',refreshTokenFromCookie);
   const userId = await jwtUtility.extractUserIdFromToken(refreshTokenFromCookie);
   const { tokenId } = await jwtUtility.extractPayloadFromRefreshToken(refreshTokenFromCookie);
 

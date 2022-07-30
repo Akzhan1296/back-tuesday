@@ -23,7 +23,7 @@ export const jwtUtility = {
   async createRefreshJWT(user: UserDBType) {
     const payload = {
       userId: user._id,
-      tokenId: new ObjectId(),
+      tokenId: new ObjectId().toString(),
 
     }
     const secretOrPrivateKey = settings.JWT_SECRET;
