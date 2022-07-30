@@ -24,15 +24,13 @@ authRouter.post('/login', async (req: Request, res: Response) => {
     if (payload) {
       const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
       if (successfullyAddedRefreshToken) {
-        res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
+        res.cookie('JWT refreshToken', refreshToken, { httpOnly: true, secure: true });
         res.status(200).send({ accessToken: token });
         return;
       }
     }
-  } else {
-    res.sendStatus(401);
-    return;
-  }
+  } 
+  return res.sendStatus(401);
 });
 
 authRouter.post('/registration',
