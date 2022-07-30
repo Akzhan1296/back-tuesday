@@ -38,7 +38,12 @@ export const jwtUtility = {
 
   async extractUserIdFromToken(token: string): Promise<ObjectId | null> {
     try {
-      const result: any = jwt.verify(token, settings.JWT_SECRET)
+      const result: any = jwt.verify(token, settings.JWT_SECRET);
+      
+      if(result.exp < new Date().getTime()) {
+        return null;
+      }
+
       if (!result.userId) {
         return null
       }
@@ -50,7 +55,12 @@ export const jwtUtility = {
 
   async extractPayloadFromRefreshToken(token: string): Promise<any> {
     try {
-      const result: any = jwt.verify(token, settings.JWT_SECRET)
+      const result: any = jwt.verify(token, settings.JWT_SECRET);
+
+      if(result.exp < new Date().getTime()) {
+        return null;
+      }
+      
       if (!result) {
         return null
       }

@@ -51,10 +51,8 @@ export const userRefreshMiddleware = async (req: Request, res: Response, next: N
   const userId = await jwtUtility.extractUserIdFromToken(token);
   const { tokenId } = await jwtUtility.extractPayloadFromRefreshToken(token);
 
-  console.log('tokenId', tokenId)
   const refreshToken = await jwtService.getRefreshToken(new ObjectId(tokenId));
-  console.log('userId', userId);
-  console.log('refresh', refreshToken)
+
 
   if (userId && refreshToken) {
     const user = await usersService.findUserById(userId);

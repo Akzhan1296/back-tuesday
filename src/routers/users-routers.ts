@@ -20,7 +20,7 @@ usersRouter.get('/',
 // create user with JWT
 usersRouter.post('/', authMiddleWare, inputValidators.login, inputValidators.password, sumErrorsMiddleware, async (req: Request, res: Response) => {
   const newUser = await usersService.createUser(req.body.login, req.body.password, '', null);
-  return res.status(201).send(transferIdToString(newUser));
+  return res.status(201).send({login: newUser.login, id: newUser._id });
 });
 
 // delete user with JWT

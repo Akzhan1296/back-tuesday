@@ -26,12 +26,12 @@ authRouter.post('/login', async (req: Request, res: Response) => {
       if (successfullyAddedRefreshToken) {
         res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
         res.status(200).send({ accessToken: token });
+        return;
       }
     }
-
-
   } else {
     res.sendStatus(401);
+    return;
   }
 });
 
@@ -115,6 +115,7 @@ authRouter.post('/refresh-token', userRefreshMiddleware, async (req: Request, re
         res.status(200).send({ accessToken: token });
       }
     }
+    res.status(401).send();
   }
 
 });
