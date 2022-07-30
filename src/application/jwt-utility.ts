@@ -12,7 +12,7 @@ export const jwtUtility = {
     const payload = { userId: user._id, isAccess: true }
     const secretOrPrivateKey = settings.JWT_SECRET;
     const options: SignOptions = {
-      expiresIn: '5 minutes',
+      expiresIn: '10sec',
     }
 
     const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
@@ -28,7 +28,7 @@ export const jwtUtility = {
     }
     const secretOrPrivateKey = settings.JWT_SECRET;
     const options: SignOptions = {
-      expiresIn: '10 minutes',
+      expiresIn: '20sec',
     }
 
     const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
@@ -40,7 +40,7 @@ export const jwtUtility = {
     try {
       const result: any = jwt.verify(token, settings.JWT_SECRET);
       
-      if(result.exp < new Date().getTime()) {
+      if(result.exp * 1000 < new Date().getTime()) {
         return null;
       }
 
@@ -57,10 +57,10 @@ export const jwtUtility = {
     try {
       const result: any = jwt.verify(token, settings.JWT_SECRET);
 
-      if(result.exp < new Date().getTime()) {
+      if(result.exp * 1000  < new Date().getTime()) {
         return null;
       }
-      
+
       if (!result) {
         return null
       }
