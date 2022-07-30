@@ -96,25 +96,20 @@ authRouter.post('/refresh-token', userRefreshMiddleware, async (req: Request, re
 
   const deletedOldRefresh = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
 
-  console.log('deleted', deletedOldRefresh);
-
   if (deletedOldRefresh) {
     const token = await jwtUtility.createJWT(user)
     const refreshToken = await jwtUtility.createRefreshJWT(user);
 
     const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshToken);
-
-    console.log('Payload', payload)
     if (payload) {
       const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
-      console.log('successfullyAddedRefreshToken',successfullyAddedRefreshToken)
       if (successfullyAddedRefreshToken) {
         res.cookie('JWT refreshToken', refreshToken, { httpOnly: true })
         res.status(200).send({ accessToken: token });
         return;
       }
     }
-    res.status(401).send();
   }
+  res.status(401).send();
 
 });
