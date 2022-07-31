@@ -113,3 +113,17 @@ authRouter.post('/refresh-token', userRefreshMiddleware, async (req: Request, re
   res.status(401).send();
 
 });
+
+authRouter.post('/logout', userRefreshMiddleware, async (req: Request, res: Response) => {
+  const tokenId = req.tokenId;
+
+  const deletedOldRefresh = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
+
+  if (deletedOldRefresh) {
+   
+    return res.status(204).send();
+
+  }
+  res.status(401).send();
+
+});
