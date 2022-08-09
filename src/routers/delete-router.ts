@@ -24,6 +24,7 @@ deleteRouter.delete('/all-data', async (req: Request, res: Response) => {
 
 
     await postsRepository.drop();
+    await bloggersRepository.drop();
 
     // if (list.includes('ips')) {
     //     await db.collection('ips').remove({});

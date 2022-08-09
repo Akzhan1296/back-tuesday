@@ -1,7 +1,7 @@
 import { settings } from '../settings';
 import mongoose, { Schema } from 'mongoose';
 import { ObjectId } from "mongodb"
-import { PostItemType } from '../types/types';
+import { BloggerItemType, PostItemType } from '../types/types';
 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
@@ -23,6 +23,14 @@ export const postsScheme = new Schema<PostItemType>({
 }, { versionKey: false });
 
 export const postsModal = mongoose.model('posts', postsScheme);
+
+export const bloggersScheme = new Schema<BloggerItemType>({
+  name: String,
+  youtubeUrl: String,
+}, { versionKey: false });
+
+export const bloggersModal = mongoose.model('bloggers', bloggersScheme);
+
 
 export async function runDb() {
   try {
