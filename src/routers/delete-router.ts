@@ -11,12 +11,8 @@ deleteRouter.delete('/all-data', async (req: Request, res: Response) => {
 
     const db = await client.db('06');
 
-    // db.dropDatabase();
     const list = await db.listCollections().toArray()
-    const collectionNames = ['ips', 'posts', 'bloggers', 'users', 'comments'];
-
-    console.log(list);
-
+    const collectionNames = ['ips', 'posts', 'bloggers', 'users', 'comments', 'refresh'];
 
     list.forEach((l: any) => {
         collectionNames.forEach(collectionName => {
@@ -25,6 +21,9 @@ deleteRouter.delete('/all-data', async (req: Request, res: Response) => {
             }
         })
     })
+
+
+    await postsRepository.drop();
 
     // if (list.includes('ips')) {
     //     await db.collection('ips').remove({});

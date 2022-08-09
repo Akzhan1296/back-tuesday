@@ -32,17 +32,28 @@ export const sumErrorsMiddleware = (req: Request, res: Response, next: NextFunct
 }
 
 export const hasBloggerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  const bloggerId = new ObjectId(req.body.bloggerId);
-  const bloggers = await bloggersRepository.getBloggerById(bloggerId);
-
-  if (!bloggers) {
-    res.status(400).json({
+  try {
+    const bloggerId = new ObjectId(req.body.bloggerId);
+    const bloggers = await bloggersRepository.getBloggerById(bloggerId);
+  
+    if (!bloggers) {
+      res.status(400).json({
+        errorsMessages: [{
+          message: "not found blogger",
+          field: "bloggerId"
+        }],
+      })
+      return;
+    }
+    next();
+  } catch (err) {
+    return res.status(400).json({
       errorsMessages: [{
-        message: "not found blogger",
+        message: "incorrect id",
         field: "bloggerId"
-      }],
-    })
-    return;
+      }]
+    }).send(); 
   }
-  next();
+  
+
 }

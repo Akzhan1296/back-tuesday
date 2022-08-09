@@ -7,7 +7,7 @@ export type PostItemType = {
   shortDescription: string,
   content: string,
   bloggerId: ObjectId,
-  bloggerName: string
+  bloggerName: string,
 };
 
 export type PostItemDBType = WithId<PostItemType>;
