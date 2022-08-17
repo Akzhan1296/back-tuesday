@@ -35,6 +35,7 @@ export type CommentType = {
   userLogin: string,
   content: string,
   addedAt: Date,
+  postId: ObjectId,
 }
 
 export type CommentDBType = WithId<CommentType>
@@ -44,7 +45,7 @@ export type CommentWithPostId = WithId<{
   userLogin: string,
   content: string,
   addedAt: Date,
-  postId: string
+  postId: ObjectId
 }>;
 
 export type PaginationParamsType = {

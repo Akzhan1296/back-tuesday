@@ -31,6 +31,8 @@ export const userAuthMiddleware = async (req: Request, res: Response, next: Next
 
   const token = req.headers.authorization.split(' ')[1];
   const userId = await jwtUtility.extractUserIdFromToken(token)
+  console.log(userId);
+
   if (userId) {
     const user = await usersService.findUserById(userId);
     req.user = user;
@@ -48,9 +50,6 @@ export const userRefreshMiddleware = async (req: Request, res: Response, next: N
   }
 
   const refreshTokenFromCookie = req.cookies.refreshToken.split(' ')[1];
-  console.log(req.headers);
-  console.log(req.cookies);
-  console.log('RF',refreshTokenFromCookie);
   const userId = await jwtUtility.extractUserIdFromToken(refreshTokenFromCookie);
   const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshTokenFromCookie);
 
@@ -58,10 +57,10 @@ export const userRefreshMiddleware = async (req: Request, res: Response, next: N
     return res.sendStatus(401);
   }
 
-  const refreshTokenFromDB = await jwtService.getRefreshToken(new ObjectId(payload.tokenId));
+  const refreshTokenIdFrom = await jwtService.getRefreshTokenId(new ObjectId(payload.tokenId));
 
 
-  if (userId && refreshTokenFromDB) {
+  if (userId && refreshTokenIdFrom) {
     const user = await usersService.findUserById(userId);
     req.user = user;
     req.tokenId = payload.tokenId;

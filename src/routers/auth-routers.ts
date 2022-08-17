@@ -24,7 +24,7 @@ authRouter.post('/login', async (req: Request, res: Response) => {
     if (payload) {
       const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
       if (successfullyAddedRefreshToken) {
-        res.cookie('refreshToken', `Bearer ${refreshToken}`, { httpOnly: true, secure: true });
+        res.cookie('refreshToken', `Bearer ${refreshToken}`, { httpOnly: true, secure: false });
         res.status(200).send({ accessToken: token });
         return;
       }
@@ -104,7 +104,7 @@ authRouter.post('/refresh-token', userRefreshMiddleware, async (req: Request, re
     if (payload) {
       const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
       if (successfullyAddedRefreshToken) {
-        res.cookie('refreshToken', `Bearer ${refreshToken}`, { httpOnly: true, secure: true })
+        res.cookie('refreshToken', `Bearer ${refreshToken}`, { httpOnly: true, secure: false })
         res.status(200).send({ accessToken: token });
         return;
       }

@@ -6,8 +6,8 @@ export const jwtService = {
   addRefreshToken: async (tokenData: RefeshTokenType): Promise<boolean> => {
     return jwtRepository.addRefreshToken(tokenData);
   },
-  getRefreshToken: (tokenId: ObjectId): Promise<string | null> => {
-    return jwtRepository.getRefreshToken(tokenId);
+  getRefreshTokenId: (tokenId: ObjectId): Promise<string | undefined> => {
+    return jwtRepository.getRefreshTokenId(tokenId);
   },
   deleteRefreshToken: (tokenId: ObjectId): Promise<boolean> => {
     return jwtRepository.deleteRefreshToken(tokenId);

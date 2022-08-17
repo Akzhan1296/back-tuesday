@@ -12,7 +12,7 @@ export const jwtUtility = {
     const payload = { userId: user._id, isAccess: true }
     const secretOrPrivateKey = settings.JWT_SECRET;
     const options: SignOptions = {
-      expiresIn: '10sec',
+      expiresIn: '1d',
     }
 
     const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
@@ -28,7 +28,7 @@ export const jwtUtility = {
     }
     const secretOrPrivateKey = settings.JWT_SECRET;
     const options: SignOptions = {
-      expiresIn: '20sec',
+      expiresIn: '2d',
     }
 
     const jwtToken = jwt.sign(payload, secretOrPrivateKey, options)
@@ -39,6 +39,7 @@ export const jwtUtility = {
   async extractUserIdFromToken(token: string): Promise<ObjectId | null> {
     try {
       const result: any = jwt.verify(token, settings.JWT_SECRET);
+      console.log('result',result);
       
       if(result.exp * 1000 < new Date().getTime()) {
         return null;

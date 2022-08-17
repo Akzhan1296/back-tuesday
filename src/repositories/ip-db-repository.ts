@@ -1,13 +1,12 @@
-import { ipCollections } from './db'
+import { ipModelClass } from './db'
 
 
 export const ipRepostitory = {
   addIp: async (ip: string, path: string, date: number) => {
-    await ipCollections.insertOne({ ip, path, date });
-    //await ipCollections.drop({ ip, date: [date] });
+    await ipModelClass.insertMany({ ip, path, date });
   },
   findIp: async (ip: string, path: string, dateLeft: number, dateRight: number) => {
-    const result = await ipCollections.find({ ip, path, date: { $gte: dateLeft, $lte: dateRight } }).toArray();
+    const result = await ipModelClass.find({ ip, path, date: { $gte: dateLeft, $lte: dateRight } }).lean();
     return result;
   },
 
