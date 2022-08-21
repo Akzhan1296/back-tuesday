@@ -15,41 +15,22 @@ import { transferIdToString } from "../application/utils";
 
 export const postsRouter = Router({});
 
-//get all posts
-postsRouter.get('/',
-  paginationMiddleware,
-  async (req, res) => {
+class PostsController {
+  async getPosts(req: Request, res: Response) {
     const result = await postsService.getPosts(req.paginationParams);
     res.status(200).send(result);
-  });
-
-//get POST by id
-postsRouter.get('/:id',
-  isValidIdMiddleware,
-  async (req, res) => {
+  }
+  async getPostById(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
-
     const postId = new ObjectId(req.params.id);
     let foundPost = await postsService.getPostById(postId);
-
     if (foundPost) {
       return res.status(200).send(transferIdToString(foundPost));
     } else {
       return res.status(404).send();
     }
-  });
-
-//create post
-postsRouter.post('/',
-  authMiddleWare,
-  hasBloggerMiddleware,
-  inputValidators.titleValidate,
-  inputValidators.content,
-  inputValidators.shortDescription,
-  inputValidators.bloggerId,
-  sumErrorsMiddleware,
-  async (req: Request, res: Response) => {
-
+  }
+  async createPost(req: Request, res: Response) {
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
@@ -58,19 +39,8 @@ postsRouter.post('/',
     const newPost = await postsService.createPost(title, shortDescription, content, bloggerId);
 
     return res.status(201).send(transferIdToString(newPost));
-  });
-
-//update post
-postsRouter.put('/:id',
-  authMiddleWare,
-  hasBloggerMiddleware,
-  inputValidators.titleValidate,
-  inputValidators.content,
-  inputValidators.shortDescription,
-  inputValidators.bloggerId,
-  sumErrorsMiddleware,
-  isValidIdMiddleware,
-  async (req: Request, res: Response) => {
+  }
+  async updatePost(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const postId = new ObjectId(req.params.id);
@@ -86,13 +56,8 @@ postsRouter.put('/:id',
     } else {
       res.send(404);
     }
-  });
-
-//delete post
-postsRouter.delete('/:id',
-  authMiddleWare,
-  isValidIdMiddleware,
-  async (req: Request, res: Response) => {
+  }
+  async deletePost(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const postId = new ObjectId(req.params.id);
@@ -102,15 +67,8 @@ postsRouter.delete('/:id',
     } else {
       return res.send(404)
     }
-  });
-
-// adding new comments to posts
-postsRouter.post('/:id/comments',
-  userAuthMiddleware,
-  inputValidators.comments,
-  sumErrorsMiddleware,
-  isValidIdMiddleware,
-  async (req: Request, res: Response) => {
+  }
+  async createCommentForSelectedPost(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const postId = new ObjectId(req.params.id);
@@ -128,13 +86,7 @@ postsRouter.post('/:id/comments',
     }
     return res.status(404).send();
   }
-)
-
-// get selected post comments
-postsRouter.get('/:id/comments',
-  isValidIdMiddleware,
-  paginationMiddleware,
-  async (req: Request, res: Response) => {
+  async getCommentsByPostId(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const postId = new ObjectId(req.params.id);
@@ -147,4 +99,61 @@ postsRouter.get('/:id/comments',
     const commentsWithPagination = await commentsService.getCommentsByPostId(postId, req.paginationParams);
     return res.status(200).send(commentsWithPagination)
   }
+}
+
+const postsControllerInstance = new PostsController();
+
+//get all posts
+postsRouter.get('/',
+  paginationMiddleware,
+  postsControllerInstance.getPosts);
+
+//get POST by id
+postsRouter.get('/:id',
+  isValidIdMiddleware,
+  postsControllerInstance.getPostById);
+
+//create post
+postsRouter.post('/',
+  authMiddleWare,
+  hasBloggerMiddleware,
+  inputValidators.titleValidate,
+  inputValidators.content,
+  inputValidators.shortDescription,
+  inputValidators.bloggerId,
+  sumErrorsMiddleware,
+  postsControllerInstance.createPost);
+
+//update post
+postsRouter.put('/:id',
+  authMiddleWare,
+  hasBloggerMiddleware,
+  inputValidators.titleValidate,
+  inputValidators.content,
+  inputValidators.shortDescription,
+  inputValidators.bloggerId,
+  sumErrorsMiddleware,
+  isValidIdMiddleware,
+  postsControllerInstance.updatePost);
+
+//delete post
+postsRouter.delete('/:id',
+  authMiddleWare,
+  isValidIdMiddleware,
+  postsControllerInstance.deletePost);
+
+// adding new comments to posts
+postsRouter.post('/:id/comments',
+  userAuthMiddleware,
+  inputValidators.comments,
+  sumErrorsMiddleware,
+  isValidIdMiddleware,
+  postsControllerInstance.createCommentForSelectedPost
+)
+
+// get selected post comments
+postsRouter.get('/:id/comments',
+  isValidIdMiddleware,
+  paginationMiddleware,
+  postsControllerInstance.getCommentsByPostId
 )

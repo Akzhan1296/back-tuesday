@@ -9,33 +9,41 @@ import { paginationMiddleware } from "../middlewares/pagination-middleware";
 
 export const usersRouter = Router({});
 
-// get all users
-usersRouter.get('/',
-  paginationMiddleware,
-  async (req: Request, res: Response) => {
+class UsersController {
+  async getUsers(req: Request, res: Response) {
     const usersWithPagination = await usersService.getUsers(req.paginationParams);
     return res.status(200).send(usersWithPagination)
-  });
-
-// create user with JWT
-usersRouter.post('/', authMiddleWare, inputValidators.login, inputValidators.password, sumErrorsMiddleware, async (req: Request, res: Response) => {
-  const newUser = await usersService.createUser(req.body.login, req.body.password, '', null);
-  return res.status(201).send({login: newUser.login, id: newUser._id });
-});
-
-// delete user with JWT
-usersRouter.delete('/:id', authMiddleWare,
-  isValidIdMiddleware,
-  async (req: Request, res: Response) => {
-
+  }
+  async createUser(req: Request, res: Response) {
+    const newUser = await usersService.createUser(req.body.login, req.body.password, '', null);
+    return res.status(201).send({ login: newUser.login, id: newUser._id });
+  }
+  async deleteUser(req: Request, res: Response) {
     if (!req.isValidId) return res.send(404);
 
     const id = new ObjectId(req.params.id);
-
     const isDeleted = await usersService.deleteUser((id));
+
     if (isDeleted) {
       return res.send(204);
     } else {
       return res.send(404);
     }
-  });
+  }
+}
+
+const usersControllerInstance = new UsersController();
+
+// get all users
+usersRouter.get('/',
+  paginationMiddleware,
+  usersControllerInstance.getUsers);
+
+// create user with JWT
+usersRouter.post('/', authMiddleWare, inputValidators.login, inputValidators.password, sumErrorsMiddleware,
+  usersControllerInstance.createUser);
+
+// delete user with JWT
+usersRouter.delete('/:id', authMiddleWare,
+  isValidIdMiddleware,
+  usersControllerInstance.deleteUser);

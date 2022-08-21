@@ -2,15 +2,21 @@ import { ObjectId, WithId } from "mongodb"
 
 export type QueryType = string | string[] | undefined
 
-export type PostItemType = {
-  title: string,
-  shortDescription: string,
-  content: string,
-  bloggerId: ObjectId,
-  bloggerName: string,
-};
+export class PostItemType {
+  constructor(
+    public title: string,
+    public shortDescription: string,
+    public content: string,
+    public bloggerId: ObjectId,
+    public bloggerName: string,
+  ) {
+
+  }
+}
 
 export type PostItemDBType = WithId<PostItemType>;
+
+
 
 export type BloggerItemType = {
   name: string

@@ -8,10 +8,8 @@ import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 
 export const commentsRouter = Router({});
 
-commentsRouter.get('/:id',
-  isValidIdMiddleware,
-
-  async (req: Request, res: Response) => {
+class CommentsController {
+  async getCommentById(req: Request, res: Response) {
     if (!req.isValidId) return res.send(404);
 
     const commentId = new ObjectId(req.params.id);
@@ -23,15 +21,8 @@ commentsRouter.get('/:id',
     } else {
       return res.status(404).send();
     }
-  });
-
-
-commentsRouter.put('/:id', userAuthMiddleware,
-  inputValidators.comments,
-  sumErrorsMiddleware,
-  isValidIdMiddleware,
-  async (req: Request, res: Response) => {
-
+  }
+  async updateComment(req: Request, res: Response) {
     if (!req.isValidId) return res.send(404);
 
     const user = req.user;
@@ -54,11 +45,8 @@ commentsRouter.put('/:id', userAuthMiddleware,
         return res.status(204).send();
       }
     }
-  });
-
-commentsRouter.delete('/:id', userAuthMiddleware, isValidIdMiddleware,
-  async (req: Request, res: Response) => {
-
+  }
+  async deleteComment(req: Request, res: Response) {
     if (!req.isValidId) return res.send(404);
 
     const user = req.user;
@@ -79,4 +67,20 @@ commentsRouter.delete('/:id', userAuthMiddleware, isValidIdMiddleware,
         return res.status(204).send();
       }
     }
-  });
+  }
+}
+
+const commentsControllerInstance = new CommentsController();
+
+commentsRouter.get('/:id',
+  isValidIdMiddleware,
+  commentsControllerInstance.getCommentById);
+
+commentsRouter.put('/:id', userAuthMiddleware,
+  inputValidators.comments,
+  sumErrorsMiddleware,
+  isValidIdMiddleware,
+  commentsControllerInstance.updateComment);
+
+commentsRouter.delete('/:id', userAuthMiddleware, isValidIdMiddleware,
+  commentsControllerInstance.deleteComment);

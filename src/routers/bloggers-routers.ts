@@ -8,22 +8,14 @@ import { transferIdToString } from "../application/utils";
 import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 import { paginationMiddleware } from "../middlewares/pagination-middleware";
 
-
 export const bloggersRouter = Router({});
 
-//get all bloggers
-bloggersRouter.get('/',
-  paginationMiddleware,
-  async (req, res) => {
+class BloggerController {
+  async getBloggers(req: Request, res: Response) {
     const bloggers = await bloggersService.getBloggers(req.paginationParams);
     res.status(200).send(bloggers);
-  });
-
-//get blogger by id
-bloggersRouter.get('/:id',
-  isValidIdMiddleware,
-  async (req, res) => {
-
+  }
+  async getBloggerById(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const bloggerId = new ObjectId(req.params.id);
@@ -34,15 +26,8 @@ bloggersRouter.get('/:id',
     } else {
       return res.status(404).send();
     }
-  })
-
-
-//get specific blogger POSTS
-bloggersRouter.get('/:id/posts',
-  isValidIdMiddleware,
-  paginationMiddleware,
-  async (req, res) => {
-
+  }
+  async getPostByBloggerId(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const bloggerId = new ObjectId(req.params.id);
@@ -54,35 +39,15 @@ bloggersRouter.get('/:id/posts',
     } else {
       return res.status(404).send();
     }
-  })
-
-//create blogger +++
-bloggersRouter.post('/',
-  authMiddleWare,
-  inputValidators.name,
-  inputValidators.youtubeUrl,
-  sumErrorsMiddleware,
-  async (req: Request, res: Response) => {
-
+  }
+  async createBlogger(req: Request, res: Response) {
     const name = req.body.name;
     const youtubeUrl = req.body.youtubeUrl;
 
     const newBlogger = await bloggersService.createBlogger(name, youtubeUrl);
     return res.status(201).send(transferIdToString(newBlogger));
-  })
-
-// create POST for specific blogger 
-bloggersRouter.post('/:id/posts',
-  authMiddleWare,
-  inputValidators.titleValidate,
-  inputValidators.content,
-  inputValidators.shortDescription,
-  sumErrorsMiddleware,
-  isValidIdMiddleware,
-
-  async (req: Request, res: Response) => {
-
-
+  }
+  async createPostForBlogger(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const title = req.body.title;
@@ -97,19 +62,9 @@ bloggersRouter.post('/:id/posts',
     } else {
       return res.status(404).send();
     }
-  })
-
-//update blogger +++
-bloggersRouter.put('/:id',
-  authMiddleWare,
-  inputValidators.name,
-  inputValidators.youtubeUrl,
-  sumErrorsMiddleware,
-  isValidIdMiddleware,
-  async (req: Request, res: Response) => {
-
+  }
+  async updateBlogger(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
-
     const bloggerId = new ObjectId(req.params.id);
     const name = req.body.name;
     const youtubeUrl = req.body.youtubeUrl;
@@ -122,23 +77,71 @@ bloggersRouter.put('/:id',
       await bloggersService.getBloggerById(bloggerId);
       return res.send(204);
     }
-  })
 
-// delete blogger +++
-bloggersRouter.delete('/:id',
-  authMiddleWare,
-  isValidIdMiddleware,
-  async (req: Request, res: Response) => {
-
+  }
+  async deleteBlogger(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
 
     const id = new ObjectId(req.params.id);
-
     const isDeleted = await bloggersService.deleteBlogger(id);
+
     if (isDeleted) {
       return res.send(204)
     } else {
       return res.send(404)
     }
-  })
+  }
+}
+
+const bloggerControllerInstance = new BloggerController();
+
+//get all bloggers
+bloggersRouter.get('/',
+  paginationMiddleware,
+  bloggerControllerInstance.getBloggers);
+
+//get blogger by id
+bloggersRouter.get('/:id',
+  isValidIdMiddleware,
+  bloggerControllerInstance.getBloggerById)
+
+//get specific blogger POSTS
+bloggersRouter.get('/:id/posts',
+  isValidIdMiddleware,
+  paginationMiddleware,
+  bloggerControllerInstance.getPostByBloggerId)
+
+//create blogger +++
+bloggersRouter.post('/',
+  authMiddleWare,
+  inputValidators.name,
+  inputValidators.youtubeUrl,
+  sumErrorsMiddleware,
+  bloggerControllerInstance.createBlogger)
+
+// create POST for specific blogger 
+bloggersRouter.post('/:id/posts',
+  authMiddleWare,
+  inputValidators.titleValidate,
+  inputValidators.content,
+  inputValidators.shortDescription,
+  sumErrorsMiddleware,
+  isValidIdMiddleware,
+
+  bloggerControllerInstance.createPostForBlogger)
+
+//update blogger +++
+bloggersRouter.put('/:id',
+  authMiddleWare,
+  inputValidators.name,
+  inputValidators.youtubeUrl,
+  sumErrorsMiddleware,
+  isValidIdMiddleware,
+  bloggerControllerInstance.updateBlogger)
+
+// delete blogger +++
+bloggersRouter.delete('/:id',
+  authMiddleWare,
+  isValidIdMiddleware,
+  bloggerControllerInstance.updateBlogger)
 
