@@ -6,7 +6,7 @@ import { BloggerItemDBType, BloggerItemType, PaginationParamsType, QueryType } f
 export const bloggersService = {
   getBloggers: async (paginationParams: PaginationParamsType) => {
 
-    const {pageNumber, pageSize, skip, searchNameTerm} = paginationParams;
+    const { pageNumber, pageSize, skip, searchNameTerm } = paginationParams;
 
     let filter = {} as BloggerItemType;
     if (searchNameTerm.length > 0) {
@@ -16,7 +16,7 @@ export const bloggersService = {
     const bloggers = await bloggersRepository.getBloggers(skip, pageSize, filter);
     const totalCount = await bloggersRepository.getBloggersCount(filter);
     const pagesCount = Math.ceil(totalCount / pageSize);
-    
+
     return {
       page: pageNumber,
       pageSize: pageSize,
@@ -29,18 +29,13 @@ export const bloggersService = {
     return bloggersRepository.getBloggerById(id);
   },
   createBlogger: async (name: string, youtubeUrl: string): Promise<BloggerItemDBType> => {
-    const newBlogger = {
-      name,
-      youtubeUrl,
-    }
+    const newBlogger = new BloggerItemType(name, youtubeUrl);
+
     const createdBlogger = await bloggersRepository.createBlogger(newBlogger);
     return createdBlogger;
   },
   updateBlogger: async (id: ObjectId, name: string, youtubeUrl: string): Promise<boolean> => {
-    const updatedBlogger = {
-      name,
-      youtubeUrl,
-    }
+    const updatedBlogger = new BloggerItemType(name, youtubeUrl);
     return await bloggersRepository.updateBlogger(id, updatedBlogger);
   },
   deleteBlogger: async (id: ObjectId): Promise<boolean> => {

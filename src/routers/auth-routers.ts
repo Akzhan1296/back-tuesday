@@ -64,11 +64,12 @@ class AuthController {
   }
   async me(req: Request, res: Response) {
     const user = req.user;
-    const { login, email, _id } = user;
-
-    res.status(200).send({
-      login, email, userId: _id
-    });
+    if (user) {
+      const { login, email, _id } = user;
+      return res.status(200).send({
+        login, email, userId: _id
+      });
+    }
   }
   async refreshToken(req: Request, res: Response) {
     const user = req.user;
@@ -76,7 +77,7 @@ class AuthController {
 
     const deletedOldRefresh = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
 
-    if (deletedOldRefresh) {
+    if (deletedOldRefresh && user) {
       const token = await jwtUtility.createJWT(user)
       const refreshToken = await jwtUtility.createRefreshJWT(user);
 

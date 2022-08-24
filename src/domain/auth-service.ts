@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { ObjectId } from 'mongodb';
 import { emailAdapter } from '../adapter/email-adapter';
 import { usersRepository } from '../repositories/users-db-repository';
-import { UserDBType, UserType } from '../types/types';
+import { UserDBType } from '../types/types';
 import { usersService } from './users-service';
 
 

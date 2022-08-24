@@ -1,40 +1,41 @@
-import { bloggersModelClass } from './db';
+import { BloggersModelClass } from './db';
 import { BloggerItemDBType, BloggerItemType } from '../types/types';
 import { ObjectId } from 'mongodb';
 
-
-export const bloggersRepository = {
-  getBloggers: async (skip: number, limit: number, filter: BloggerItemType): Promise<BloggerItemDBType[]> => {
-    return await bloggersModelClass.find(filter).skip(skip).limit(limit).lean();
-  },
-  getBloggersCount: async (count: BloggerItemType) => {
-    return await bloggersModelClass.count(count);
-  },
-  getBloggerById: async (id: ObjectId): Promise<BloggerItemDBType | null> => {
-    let blogger = await bloggersModelClass.findOne({ _id: id }).lean();
+class BloggersRepository {
+  async getBloggers(skip: number, limit: number, filter: BloggerItemType): Promise<BloggerItemDBType[]> {
+    return await BloggersModelClass.find(filter).skip(skip).limit(limit).lean();
+  }
+  async getBloggersCount(count: BloggerItemType) {
+    return await BloggersModelClass.count(count);
+  }
+  async getBloggerById(id: ObjectId): Promise<BloggerItemDBType | null> {
+    let blogger = await BloggersModelClass.findOne({ _id: id }).lean();
     if (blogger) {
       return blogger;
     } else {
       return null;
     }
-  },
-  createBlogger: async (newBlogger: BloggerItemType): Promise<BloggerItemDBType> => {
-    const result = await bloggersModelClass.insertMany(newBlogger);
+  }
+  async createBlogger(newBlogger: BloggerItemType): Promise<BloggerItemDBType> {
+    const result = await BloggersModelClass.insertMany(newBlogger);
 
     return { ...newBlogger, _id: result[0]['_id'] };
-  },
-  updateBlogger: async (id: ObjectId, updatedBlogger: BloggerItemType): Promise<boolean> => {
-    const result = await bloggersModelClass.updateOne({ _id: id }, { ...updatedBlogger });
+  }
+  async updateBlogger(id: ObjectId, updatedBlogger: BloggerItemType): Promise<boolean> {
+    const result = await BloggersModelClass.updateOne({ _id: id }, { ...updatedBlogger });
     return result.matchedCount === 1
-  },
-  deleteBlogger: async (id: ObjectId): Promise<boolean> => {
-    const result = await bloggersModelClass.deleteOne({ _id: id });
+  }
+  async deleteBlogger(id: ObjectId): Promise<boolean> {
+    const result = await BloggersModelClass.deleteOne({ _id: id });
     return result.deletedCount === 1
-  },
-  drop: async () => {
-    await bloggersModelClass.collection.drop();
+  }
+  async drop() {
+    await BloggersModelClass.collection.drop();
   }
 }
+
+export const bloggersRepository = new BloggersRepository();
 
 
 

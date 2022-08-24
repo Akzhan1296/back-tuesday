@@ -1,10 +1,11 @@
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
 import { commentsRepository } from "../repositories/comments-db-repositry";
-import { CommentDBType, PaginationParamsType } from "../types/types";
+import { PaginationParamsType, CommentType } from "../types/types";
+
 
 export const commentsService = {
-  getCommentsByPostId: async(postId: ObjectId, paginationParams: PaginationParamsType) => {
+  getCommentsByPostId: async (postId: ObjectId, paginationParams: PaginationParamsType) => {
     const { pageNumber, pageSize, skip } = paginationParams;
 
     const comments = await commentsRepository.getAllComments(postId, skip, pageSize);
@@ -22,13 +23,14 @@ export const commentsService = {
 
   },
   createCommentForSelectedPost: async (content: string, userLogin: string, userId: ObjectId, postId: ObjectId) => {
-    const newComment = {
-      content,
-      userLogin,
+    const newComment = new CommentType(
       userId,
+      userLogin,
+      content,
+      new Date(),
       postId,
-      addedAt: new Date(),
-    }
+    )
+
     return commentsRepository.createCommentForSelectedPost(newComment);
   },
   getAllPostsCount: async () => {

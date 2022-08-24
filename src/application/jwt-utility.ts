@@ -1,4 +1,4 @@
-import { UserDBType, UserType } from '../types/types';
+import { UserDBType } from '../types/types';
 import { ObjectId } from 'mongodb'
 import jwt, { SignOptions } from 'jsonwebtoken'
 import { settings } from '../settings';
@@ -39,7 +39,6 @@ export const jwtUtility = {
   async extractUserIdFromToken(token: string): Promise<ObjectId | null> {
     try {
       const result: any = jwt.verify(token, settings.JWT_SECRET);
-      console.log('result',result);
       
       if(result.exp * 1000 < new Date().getTime()) {
         return null;

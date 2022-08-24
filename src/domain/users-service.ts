@@ -1,11 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { authService } from './auth-service';
-import { PaginationParamsType, UserDBType, UserType } from '../types/types';
+import { PaginationParamsType, UserDBType } from '../types/types';
 import { usersRepository } from '../repositories/users-db-repository';
 
 
 export const usersService = {
-
   getUsers: async (paginationParams: PaginationParamsType) => {
     const { pageNumber, pageSize, skip } = paginationParams;
 
@@ -21,19 +20,18 @@ export const usersService = {
       items: users.map(u => ({ id: u._id, login: u.login })),
     }
   },
-
   createUser: async (userLogin: string, userPassword: string, email: string, confirmCode: ObjectId | null,): Promise<UserDBType> => {
     const passwordHash = await authService.generateHash(userPassword);
 
-    const newUser: UserDBType = {
-      _id: new ObjectId(),
-      login: userLogin,
+    const newUser = new UserDBType(
+      new ObjectId(),
+      userLogin,
       passwordHash,
-      createdAt: new Date(),
+      new Date(),
       confirmCode,
-      isConfirmed: false,
+      false,
       email
-    };
+    );
 
     return usersRepository.createUser(newUser);
   },
@@ -46,7 +44,7 @@ export const usersService = {
   findUserByEmail: async (email: string): Promise<UserDBType | null> => {
     return usersRepository.findUserByEmail(email);
   },
-  getUserByCode: async (confirmCode : ObjectId): Promise<UserDBType | null> => {
+  getUserByCode: async (confirmCode: ObjectId): Promise<UserDBType | null> => {
     return usersRepository.getUserByCode(confirmCode);
   },
   deleteUser: async (id: ObjectId): Promise<boolean> => {

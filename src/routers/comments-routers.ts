@@ -39,7 +39,7 @@ class CommentsController {
       return res.status(403).send();
     }
 
-    if (foundComment) {
+    if (foundComment && user) {
       const isUpdated = await commentsService.updateComment(commentId, content, user.login, user._id);
       if (isUpdated) {
         return res.status(204).send();

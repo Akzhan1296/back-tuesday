@@ -9,50 +9,38 @@ export class PostItemType {
     public content: string,
     public bloggerId: ObjectId,
     public bloggerName: string,
-  ) {
+  ) { }
+}
+export type PostItemDBType = WithId<PostItemType>;
+
+export class BloggerItemType {
+  constructor(public name: string, public youtubeUrl: string) {
 
   }
 }
-
-export type PostItemDBType = WithId<PostItemType>;
-
-
-
-export type BloggerItemType = {
-  name: string
-  youtubeUrl: string
-}
-
 export type BloggerItemDBType = WithId<BloggerItemType>
 
-export type UserType = {
-  login: string
-  passwordHash: string
-  createdAt: Date
-  confirmCode: ObjectId | null,
-  isConfirmed: boolean,
-  email: string,
+export class UserDBType {
+  constructor(
+    public _id: ObjectId,
+    public login: string,
+    public passwordHash: string,
+    public createdAt: Date,
+    public confirmCode: ObjectId | null,
+    public isConfirmed: boolean,
+    public email: string,) { }
 }
 
-export type UserDBType = WithId<UserType>
-
-export type CommentType = {
-  userId: ObjectId,
-  userLogin: string,
-  content: string,
-  addedAt: Date,
-  postId: ObjectId,
+export class CommentType {
+  constructor(
+    public userId: ObjectId,
+    public userLogin: string,
+    public content: string,
+    public addedAt: Date,
+    public postId: ObjectId,
+  ) { }
 }
-
 export type CommentDBType = WithId<CommentType>
-
-export type CommentWithPostId = WithId<{
-  userId: ObjectId,
-  userLogin: string,
-  content: string,
-  addedAt: Date,
-  postId: ObjectId
-}>;
 
 export type PaginationParamsType = {
   pageNumber: number,

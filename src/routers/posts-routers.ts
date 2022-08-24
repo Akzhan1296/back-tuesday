@@ -8,7 +8,7 @@ import {
 import { authMiddleWare, userAuthMiddleware } from "../middlewares/auth-middleware";
 import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 import { paginationMiddleware } from "../middlewares/pagination-middleware"
-import { CommentWithPostId, QueryType } from '../types/types';
+import { CommentDBType, QueryType } from '../types/types';
 import { commentsService } from "../domain/comments-service";
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
@@ -77,9 +77,8 @@ class PostsController {
 
     let foundPost = await postsService.getPostById(postId);
 
-    if (foundPost) {
-      const newComment: CommentWithPostId = await commentsService.createCommentForSelectedPost(comment, user.login, user._id, postId);
-
+    if (foundPost && user) {
+      const newComment: CommentDBType = await commentsService.createCommentForSelectedPost(comment, user.login, user._id, postId);
       const { postId: postId2, ...params } = newComment;
 
       return res.status(201).send(transferIdToString(params));

@@ -1,23 +1,28 @@
-import { //refreshTokensCollections, 
-    refreshTokenClass
+import {
+  RefreshTokenClass
 } from './db';
 import { RefeshTokenType } from "../types/types";
 import { ObjectId } from 'mongodb';
 
-export const jwtRepository = {
-    addRefreshToken: async (tokenData: RefeshTokenType): Promise<boolean> => {
-        await refreshTokenClass.insertMany(tokenData);
-        return true;
-    },
-    getRefreshTokenId: async (tokenId: ObjectId): Promise<string | undefined> => {
-        const refreshToken = await refreshTokenClass.findOne({ tokenId }).lean();
-        return refreshToken?.tokenId as string;
-    },
-    deleteRefreshToken: async (tokenId: ObjectId): Promise<boolean> => {
-        const result = await refreshTokenClass.deleteOne({ tokenId });
-        return result.deletedCount === 1
-    },
-    deleteAllRefreshTokens: async () => {
+class JwtRepository {
+  async addRefreshToken(tokenData: RefeshTokenType): Promise<boolean> {
+    await RefreshTokenClass.insertMany(tokenData);
+    return true;
+  }
+  async getRefreshTokenId(tokenId: ObjectId): Promise<string | undefined> {
+    const refreshToken = await RefreshTokenClass.findOne({ tokenId }).lean();
+    return refreshToken?.tokenId as string;
+  }
+  async deleteRefreshToken(tokenId: ObjectId): Promise<boolean> {
+    const result = await RefreshTokenClass.deleteOne({ tokenId });
+    return result.deletedCount === 1
+  }
+  async deleteAllRefreshTokens() {
 
-    }
+  }
+  async drop() {
+    await RefreshTokenClass.collection.drop();
+  }
 }
+
+export const jwtRepository = new JwtRepository();

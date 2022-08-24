@@ -1,18 +1,11 @@
 import { settings } from '../settings';
 import mongoose, { Schema, model } from 'mongoose';
 import { ObjectId } from "mongodb"
-import { BloggerItemType, CommentType, CommentWithPostId, PostItemType, UserDBType } from '../types/types';
+import { BloggerItemType, CommentType, PostItemType, UserDBType } from '../types/types';
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-export const client = new MongoClient(settings.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-
-// export const postsCollection = client.db('06').collection('posts');
-// export const bloggersCollection = client.db('06').collection('bloggers');
-// export const usersCollection = client.db('06').collection('users');
-// export const commentsCollection = client.db('06').collection('comments');
-// export const ipCollections = client.db('06').collection('ips');
-// export const refreshTokensCollections = client.db('06').collection('refresh');
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+// export const client = new MongoClient(settings.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 export const postsSchema = new Schema<PostItemType>({
   title: String,
@@ -22,14 +15,14 @@ export const postsSchema = new Schema<PostItemType>({
   bloggerName: String,
 }, { versionKey: false });
 
-export const postsModelClass = model('posts', postsSchema);
+export const PostsModelClass = model('posts', postsSchema);
 
 export const bloggersSchema = new Schema<BloggerItemType>({
   name: String,
   youtubeUrl: String,
 }, { versionKey: false });
 
-export const bloggersModelClass = model('bloggers', bloggersSchema);
+export const BloggersModelClass = model('bloggers', bloggersSchema);
 
 export const commentSchema = new Schema<CommentType>({
   userId: ObjectId,
@@ -39,7 +32,7 @@ export const commentSchema = new Schema<CommentType>({
   postId: ObjectId
 }, { versionKey: false });
 
-export const commentModelClass = model('comments', commentSchema);
+export const CommentModelClass = model('comments', commentSchema);
 
 export const userScheme = new Schema<UserDBType>({
   login: String,
@@ -50,7 +43,7 @@ export const userScheme = new Schema<UserDBType>({
   email: String,
 }, { versionKey: false });
 
-export const userModelClass = model('users', userScheme);
+export const UserModelClass = model('users', userScheme);
 
 export const ipSchema = new Schema({
   ip: String,
@@ -58,7 +51,7 @@ export const ipSchema = new Schema({
   date: Number,
 }, { versionKey: false });
 
-export const ipModelClass = model('ips', ipSchema);
+export const IpModelClass = model('ips', ipSchema);
 
 export const refreshTokenSchema = new Schema({
   userId: ObjectId,
@@ -66,7 +59,7 @@ export const refreshTokenSchema = new Schema({
   exp: Number,
 }, { versionKey: false });
 
-export const refreshTokenClass = model('refresh', refreshTokenSchema);
+export const RefreshTokenClass = model('refresh', refreshTokenSchema);
 
 export async function runDb() {
   try {
