@@ -5,12 +5,11 @@ import { usersRepository } from '../repositories/users-db-repository';
 import { UserDBType } from '../types/types';
 import { usersService } from './users-service';
 
-
-export const authService = {
-  generateHash: async (password: string) => {
+class AuthService {
+  async generateHash(password: string) {
     const hash = await bcrypt.hash(password, 10)
     return hash;
-  },
+  }
 
   /**
    *
@@ -28,21 +27,20 @@ export const authService = {
       return user;
     }
     return null
-  },
-
+  }
   async registration(email: string, login: string, password: string) {
     const confirmCode = new ObjectId();
     const newUser = await usersService.createUser(login, password, email, confirmCode);
     if (newUser) {
       await emailAdapter.sendEmail(email, 'Lesson05', `<a href="http://localhost:3000/?code=${confirmCode}">Confirm email</a>`)
     }
-  },
+  }
   async confirmRegistrationCode(code: ObjectId) {
     usersService.confirmRegistrationCode(code)
-  },
+  }
   async getUserByCode(confirmCode: ObjectId) {
     return usersService.getUserByCode(confirmCode);
-  },
+  }
   async resendCode(email: string) {
     const user = await usersService.findUserByEmail(email);
     const confirmCode = new ObjectId();
@@ -52,3 +50,5 @@ export const authService = {
     }
   }
 };
+
+export const authService = new AuthService();

@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
 import { bloggersRepository } from "../repositories/bloggers-db-repository";
-import { BloggerItemDBType, BloggerItemType, PaginationParamsType, QueryType } from '../types/types';
+import { BloggerItemDBType, BloggerItemType, PaginationParamsType } from '../types/types';
 
-export const bloggersService = {
-  getBloggers: async (paginationParams: PaginationParamsType) => {
+class BloggersService {
+  async getBloggers(paginationParams: PaginationParamsType) {
 
     const { pageNumber, pageSize, skip, searchNameTerm } = paginationParams;
 
@@ -24,24 +24,25 @@ export const bloggersService = {
       pagesCount,
       items: bloggers.map((b) => (transferIdToString(b))),
     }
-  },
-  getBloggerById: async (id: ObjectId): Promise<BloggerItemDBType | null> => {
+  }
+  async getBloggerById(id: ObjectId): Promise<BloggerItemDBType | null> {
     return bloggersRepository.getBloggerById(id);
-  },
-  createBlogger: async (name: string, youtubeUrl: string): Promise<BloggerItemDBType> => {
+  }
+  async createBlogger(name: string, youtubeUrl: string): Promise<BloggerItemDBType> {
     const newBlogger = new BloggerItemType(name, youtubeUrl);
 
     const createdBlogger = await bloggersRepository.createBlogger(newBlogger);
     return createdBlogger;
-  },
-  updateBlogger: async (id: ObjectId, name: string, youtubeUrl: string): Promise<boolean> => {
+  }
+  async updateBlogger(id: ObjectId, name: string, youtubeUrl: string): Promise<boolean> {
     const updatedBlogger = new BloggerItemType(name, youtubeUrl);
     return await bloggersRepository.updateBlogger(id, updatedBlogger);
-  },
-  deleteBlogger: async (id: ObjectId): Promise<boolean> => {
+  }
+  async deleteBlogger(id: ObjectId): Promise<boolean> {
     return await bloggersRepository.deleteBlogger(id);
-  },
+  }
 }
 
+export const bloggersService = new BloggersService();
 
 

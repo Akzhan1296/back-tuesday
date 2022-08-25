@@ -10,8 +10,7 @@ class IpRepostitory {
   }
   async drop() {
     await IpModelClass.collection.drop();
-  }
-  
+  } 
 }
 
 export const ipRepostitory = new IpRepostitory();

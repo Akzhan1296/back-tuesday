@@ -3,9 +3,8 @@ import { authService } from './auth-service';
 import { PaginationParamsType, UserDBType } from '../types/types';
 import { usersRepository } from '../repositories/users-db-repository';
 
-
-export const usersService = {
-  getUsers: async (paginationParams: PaginationParamsType) => {
+class UsersService {
+  async getUsers(paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;
 
     const users = await usersRepository.getAllUsers(skip, pageSize);
@@ -19,8 +18,8 @@ export const usersService = {
       pagesCount,
       items: users.map(u => ({ id: u._id, login: u.login })),
     }
-  },
-  createUser: async (userLogin: string, userPassword: string, email: string, confirmCode: ObjectId | null,): Promise<UserDBType> => {
+  }
+  async createUser(userLogin: string, userPassword: string, email: string, confirmCode: ObjectId | null,): Promise<UserDBType> {
     const passwordHash = await authService.generateHash(userPassword);
 
     const newUser = new UserDBType(
@@ -34,23 +33,25 @@ export const usersService = {
     );
 
     return usersRepository.createUser(newUser);
-  },
-  findUserById: async (id: ObjectId): Promise<UserDBType | null> => {
+  }
+  async findUserById(id: ObjectId): Promise<UserDBType | null> {
     return usersRepository.findById(id);
-  },
-  updateCode: async (email: string, code: ObjectId): Promise<boolean> => {
+  }
+  async updateCode(email: string, code: ObjectId): Promise<boolean> {
     return usersRepository.updateCode(email, code);
-  },
-  findUserByEmail: async (email: string): Promise<UserDBType | null> => {
+  }
+  async findUserByEmail(email: string): Promise<UserDBType | null> {
     return usersRepository.findUserByEmail(email);
-  },
-  getUserByCode: async (confirmCode: ObjectId): Promise<UserDBType | null> => {
+  }
+  async getUserByCode(confirmCode: ObjectId): Promise<UserDBType | null> {
     return usersRepository.getUserByCode(confirmCode);
-  },
-  deleteUser: async (id: ObjectId): Promise<boolean> => {
+  }
+  async deleteUser(id: ObjectId): Promise<boolean> {
     return usersRepository.deleteUser(id);
-  },
-  confirmRegistrationCode: async (code: ObjectId): Promise<boolean> => {
+  }
+  async confirmRegistrationCode(code: ObjectId): Promise<boolean> {
     return usersRepository.confirmRegistrationCode(code);
   }
-};
+}
+
+export const usersService = new UsersService();

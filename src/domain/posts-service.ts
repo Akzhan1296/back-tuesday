@@ -1,7 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { transferIdToString } from '../application/utils';
 import { postsRepository } from '../repositories/posts-db-repository';
-import { PaginationParamsType, PostItemType, QueryType } from '../types/types';
+import { PaginationParamsType, PostItemType } from '../types/types';
+
 class PostsService {
   async getPosts(paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;

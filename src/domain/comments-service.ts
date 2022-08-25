@@ -3,9 +3,8 @@ import { transferIdToString } from "../application/utils";
 import { commentsRepository } from "../repositories/comments-db-repositry";
 import { PaginationParamsType, CommentType } from "../types/types";
 
-
-export const commentsService = {
-  getCommentsByPostId: async (postId: ObjectId, paginationParams: PaginationParamsType) => {
+class CommentsService {
+  async getCommentsByPostId(postId: ObjectId, paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;
 
     const comments = await commentsRepository.getAllComments(postId, skip, pageSize);
@@ -21,8 +20,8 @@ export const commentsService = {
       items: comments.map(({ postId, ...rest }) => transferIdToString(rest))
     }
 
-  },
-  createCommentForSelectedPost: async (content: string, userLogin: string, userId: ObjectId, postId: ObjectId) => {
+  }
+  async createCommentForSelectedPost(content: string, userLogin: string, userId: ObjectId, postId: ObjectId) {
     const newComment = new CommentType(
       userId,
       userLogin,
@@ -32,24 +31,24 @@ export const commentsService = {
     )
 
     return commentsRepository.createCommentForSelectedPost(newComment);
-  },
-  getAllPostsCount: async () => {
+  }
+  async getAllPostsCount() {
     return await commentsRepository.getAllPostsCount();
-  },
-  getCommentById: async (id: ObjectId) => {
+  }
+  async getCommentById(id: ObjectId) {
     return await commentsRepository.getCommentById(id);
-  },
-  deleteComment: async (id: ObjectId): Promise<boolean> => {
+  }
+  async deleteComment(id: ObjectId): Promise<boolean> {
     return await commentsRepository.deleteComment(id);
-  },
-  updateComment: async (id: ObjectId, content: string, userLogin: string, userId: ObjectId): Promise<boolean> => {
-
+  }
+  async updateComment(id: ObjectId, content: string, userLogin: string, userId: ObjectId): Promise<boolean> {
     const updatedComment = {
       content,
       userLogin,
       userId,
     }
-
     return await commentsRepository.updateComment(id, updatedComment);
   }
 };
+
+export const commentsService = new CommentsService()
