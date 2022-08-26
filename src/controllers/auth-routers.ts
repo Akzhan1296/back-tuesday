@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
-import { jwtUtility } from "../application/jwt-utility";
+import { jwtUtility } from "../utils/jwt-utility";
 
 //middleware
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
@@ -9,8 +9,8 @@ import { blockIpMiddleWare } from '../middlewares/block-ip-middleware';
 import { userAuthMiddleware, userRefreshMiddleware } from "../middlewares/auth-middleware";
 
 //application
-import { JwtService } from "../domain/jwt-service";
-import { AuthService } from "../domain/auth-service";
+import { JwtService } from "../application/jwt-service";
+import { AuthService } from "../application/auth-service";
 
 
 export const authRouter = Router({});

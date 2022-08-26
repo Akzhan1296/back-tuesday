@@ -2,11 +2,11 @@ import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
 
 //utils
-import { transferIdToString } from "../application/utils";
+import { transferIdToString } from "../utils/utils";
 
 //services
-import { BloggersService } from "../domain/bloggers-service";
-import { PostsService } from '../domain/posts-service';
+import { BloggersService } from "../application/bloggers-service";
+import { PostsService } from '../application/posts-service';
 
 //middleware
 import { authMiddleWare } from "../middlewares/auth-middleware";

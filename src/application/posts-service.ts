@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { transferIdToString } from '../application/utils';
+import { transferIdToString } from '../utils/utils';
 import { PostsRepository } from '../repositories/posts-db-repository';
 import { PaginationParamsType, PostItemType } from '../types/types';
 

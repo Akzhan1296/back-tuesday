@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { transferIdToString } from "../application/utils";
+import { transferIdToString } from "../utils/utils";
 import { CommentsRepository } from "../repositories/comments-db-repositry";
 import { PaginationParamsType, CommentType } from "../types/types";
 

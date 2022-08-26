@@ -2,8 +2,8 @@ import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
 
 //service
-import { UsersService } from "../domain/users-service";
-import { AuthService } from '../domain/auth-service';
+import { UsersService } from "../application/users-service";
+import { AuthService } from '../application/auth-service';
 
 //middleware
 import { authMiddleWare } from "../middlewares/auth-middleware";

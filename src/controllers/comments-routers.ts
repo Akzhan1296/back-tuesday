@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
-import { transferIdToString } from "../application/utils";
+import { transferIdToString } from "../utils/utils";
 
 //services
-import { CommentsService } from "../domain/comments-service";
+import { CommentsService } from "../application/comments-service";
 
 //middleware
 import { userAuthMiddleware } from "../middlewares/auth-middleware";

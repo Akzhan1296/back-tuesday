@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
-import { jwtUtility } from "../application/jwt-utility";
-import { jwtService } from "../domain/jwt-service";
-import { usersService } from "../domain/users-service";
+import { jwtUtility } from "../utils/jwt-utility";
+import { jwtService } from "../application/jwt-service";
+import { usersService } from "../application/users-service";
 
 export const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
   if (req.headers.authorization) {

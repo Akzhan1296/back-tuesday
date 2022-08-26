@@ -2,8 +2,8 @@ import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
 
 //services
-import { PostsService } from "../domain/posts-service";
-import { CommentsService } from "../domain/comments-service";
+import { PostsService } from "../application/posts-service";
+import { CommentsService } from "../application/comments-service";
 
 //middleware
 import {
@@ -16,7 +16,7 @@ import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 import { paginationMiddleware } from "../middlewares/pagination-middleware"
 
 import { CommentDBType } from '../types/types';
-import { transferIdToString } from "../application/utils";
+import { transferIdToString } from "../utils/utils";
 
 export const postsRouter = Router({});
 

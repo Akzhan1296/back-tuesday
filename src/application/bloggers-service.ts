@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { transferIdToString } from "../application/utils";
+import { transferIdToString } from "../utils/utils";
 import { BloggersRepository } from "../repositories/bloggers-db-repository";
 import { BloggerItemDBType, BloggerItemType, PaginationParamsType } from '../types/types';
 
