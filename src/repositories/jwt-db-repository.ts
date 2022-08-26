@@ -4,7 +4,7 @@ import {
 import { RefeshTokenType } from "../types/types";
 import { ObjectId } from 'mongodb';
 
-class JwtRepository {
+export class JwtRepository {
   async addRefreshToken(tokenData: RefeshTokenType): Promise<boolean> {
     await RefreshTokenClass.insertMany(tokenData);
     return true;
@@ -20,9 +20,4 @@ class JwtRepository {
   async deleteAllRefreshTokens() {
 
   }
-  async drop() {
-    await RefreshTokenClass.collection.drop();
-  }
-}
-
-export const jwtRepository = new JwtRepository();
+};

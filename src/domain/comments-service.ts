@@ -1,14 +1,18 @@
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
-import { commentsRepository } from "../repositories/comments-db-repositry";
+import { CommentsRepository } from "../repositories/comments-db-repositry";
 import { PaginationParamsType, CommentType } from "../types/types";
 
-class CommentsService {
+export class CommentsService {
+  commentsRepository: CommentsRepository;
+  constructor(){
+    this.commentsRepository = new CommentsRepository();
+  }
   async getCommentsByPostId(postId: ObjectId, paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;
 
-    const comments = await commentsRepository.getAllComments(postId, skip, pageSize);
-    const totalCount = await commentsRepository.getAllCountCommentsByPostId(postId);
+    const comments = await this.commentsRepository.getAllComments(postId, skip, pageSize);
+    const totalCount = await this.commentsRepository.getAllCountCommentsByPostId(postId);
 
     const pagesCount = Math.ceil(totalCount / pageSize);
 
@@ -30,16 +34,16 @@ class CommentsService {
       postId,
     )
 
-    return commentsRepository.createCommentForSelectedPost(newComment);
+    return this.commentsRepository.createCommentForSelectedPost(newComment);
   }
   async getAllPostsCount() {
-    return await commentsRepository.getAllPostsCount();
+    return await this.commentsRepository.getAllPostsCount();
   }
   async getCommentById(id: ObjectId) {
-    return await commentsRepository.getCommentById(id);
+    return await this.commentsRepository.getCommentById(id);
   }
   async deleteComment(id: ObjectId): Promise<boolean> {
-    return await commentsRepository.deleteComment(id);
+    return await this.commentsRepository.deleteComment(id);
   }
   async updateComment(id: ObjectId, content: string, userLogin: string, userId: ObjectId): Promise<boolean> {
     const updatedComment = {
@@ -47,8 +51,8 @@ class CommentsService {
       userLogin,
       userId,
     }
-    return await commentsRepository.updateComment(id, updatedComment);
+    return await this.commentsRepository.updateComment(id, updatedComment);
   }
 };
 
-export const commentsService = new CommentsService()
+// export const commentsService = new CommentsService()

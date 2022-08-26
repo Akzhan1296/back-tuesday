@@ -1,7 +1,11 @@
 import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
 import { transferIdToString } from "../application/utils";
-import { commentsService } from "../domain/comments-service";
+
+//services
+import { CommentsService } from "../domain/comments-service";
+
+//middleware
 import { userAuthMiddleware } from "../middlewares/auth-middleware";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
 import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
@@ -9,11 +13,17 @@ import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 export const commentsRouter = Router({});
 
 class CommentsController {
+
+  commentsService: CommentsService;
+  constructor(){
+    this.commentsService = new CommentsService();
+  }
+
   async getCommentById(req: Request, res: Response) {
     if (!req.isValidId) return res.send(404);
 
     const commentId = new ObjectId(req.params.id);
-    let foundComment = await commentsService.getCommentById(commentId);
+    let foundComment = await this.commentsService.getCommentById(commentId);
 
     if (foundComment) {
       const { postId, ...rest } = foundComment;
@@ -29,7 +39,7 @@ class CommentsController {
     const commentId = new ObjectId(req.params.id);
     const content = req.body.content;
 
-    let foundComment = await commentsService.getCommentById(commentId);
+    let foundComment = await this.commentsService.getCommentById(commentId);
 
     if (!foundComment) {
       return res.status(404).send();
@@ -40,7 +50,7 @@ class CommentsController {
     }
 
     if (foundComment && user) {
-      const isUpdated = await commentsService.updateComment(commentId, content, user.login, user._id);
+      const isUpdated = await this.commentsService.updateComment(commentId, content, user.login, user._id);
       if (isUpdated) {
         return res.status(204).send();
       }
@@ -51,7 +61,7 @@ class CommentsController {
 
     const user = req.user;
     const commentId = new ObjectId(req.params.id);
-    let foundComment = await commentsService.getCommentById(commentId);
+    let foundComment = await this.commentsService.getCommentById(commentId);
 
     if (!foundComment) {
       return res.status(404).send();
@@ -62,7 +72,7 @@ class CommentsController {
     }
 
     if (foundComment) {
-      const isDeleted = await commentsService.deleteComment(commentId);
+      const isDeleted = await this.commentsService.deleteComment(commentId);
       if (isDeleted) {
         return res.status(204).send();
       }
@@ -74,13 +84,13 @@ const commentsControllerInstance = new CommentsController();
 
 commentsRouter.get('/:id',
   isValidIdMiddleware,
-  commentsControllerInstance.getCommentById);
+  commentsControllerInstance.getCommentById.bind(commentsControllerInstance));
 
 commentsRouter.put('/:id', userAuthMiddleware,
   inputValidators.comments,
   sumErrorsMiddleware,
   isValidIdMiddleware,
-  commentsControllerInstance.updateComment);
+  commentsControllerInstance.updateComment.bind(commentsControllerInstance));
 
 commentsRouter.delete('/:id', userAuthMiddleware, isValidIdMiddleware,
-  commentsControllerInstance.deleteComment);
+  commentsControllerInstance.deleteComment.bind(commentsControllerInstance));

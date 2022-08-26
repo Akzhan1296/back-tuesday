@@ -8,9 +8,6 @@ class IpRepostitory {
     const result = await IpModelClass.find({ ip, path, date: { $gte: dateLeft, $lte: dateRight } }).lean();
     return result;
   }
-  async drop() {
-    await IpModelClass.collection.drop();
-  } 
 }
 
 export const ipRepostitory = new IpRepostitory();

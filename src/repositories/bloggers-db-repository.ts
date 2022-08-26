@@ -2,7 +2,7 @@ import { BloggersModelClass } from './db';
 import { BloggerItemDBType, BloggerItemType } from '../types/types';
 import { ObjectId } from 'mongodb';
 
-class BloggersRepository {
+export class BloggersRepository {
   async getBloggers(skip: number, limit: number, filter: BloggerItemType): Promise<BloggerItemDBType[]> {
     return await BloggersModelClass.find(filter).skip(skip).limit(limit).lean();
   }
@@ -29,9 +29,6 @@ class BloggersRepository {
   async deleteBlogger(id: ObjectId): Promise<boolean> {
     const result = await BloggersModelClass.deleteOne({ _id: id });
     return result.deletedCount === 1
-  }
-  async drop() {
-    await BloggersModelClass.collection.drop();
   }
 }
 

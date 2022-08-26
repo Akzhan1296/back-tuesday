@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { UserDBType } from "../types/types";
 import { UserModelClass } from "./db";
 
-class UsersRepository {
+export class UsersRepository {
   async createUser(newUser: UserDBType): Promise<UserDBType> {
     await UserModelClass.insertMany(newUser);
     return newUser as UserDBType;
@@ -40,9 +40,6 @@ class UsersRepository {
   async confirmRegistrationCode(code: ObjectId): Promise<boolean> {
     const result = await UserModelClass.updateOne({ confirmCode: code }, { $set: { isConfirmed: true } });
     return result.matchedCount === 1
-  }
-  async drop() {
-    await UserModelClass.collection.drop();
   }
 }
 

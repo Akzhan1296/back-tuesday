@@ -1,16 +1,20 @@
 import { ObjectId } from 'mongodb';
-import { jwtRepository } from '../repositories/jwt-db-repository';
+import { JwtRepository } from '../repositories/jwt-db-repository';
 import { RefeshTokenType } from '../types/types';
 
-class JwtService {
+export class JwtService {
+  jwtRepository: JwtRepository;
+  constructor(){
+    this.jwtRepository = new JwtRepository();
+  }
   async addRefreshToken(tokenData: RefeshTokenType): Promise<boolean> {
-    return jwtRepository.addRefreshToken(tokenData);
+    return this.jwtRepository.addRefreshToken(tokenData);
   }
   async getRefreshTokenId(tokenId: ObjectId): Promise<string | undefined> {
-    return jwtRepository.getRefreshTokenId(tokenId);
+    return this.jwtRepository.getRefreshTokenId(tokenId);
   }
   async deleteRefreshToken(tokenId: ObjectId): Promise<boolean> {
-    return jwtRepository.deleteRefreshToken(tokenId);
+    return this.jwtRepository.deleteRefreshToken(tokenId);
   }
   async deleteAllRefreshTokens() {}
 }

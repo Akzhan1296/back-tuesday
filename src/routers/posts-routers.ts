@@ -1,5 +1,11 @@
 import { Request, Response, Router } from "express";
-import { postsService } from "../domain/posts-service";
+import { ObjectId } from "mongodb";
+
+//services
+import { PostsService } from "../domain/posts-service";
+import { CommentsService } from "../domain/comments-service";
+
+//middleware
 import {
   hasBloggerMiddleware,
   inputValidators,
@@ -8,22 +14,29 @@ import {
 import { authMiddleWare, userAuthMiddleware } from "../middlewares/auth-middleware";
 import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 import { paginationMiddleware } from "../middlewares/pagination-middleware"
-import { CommentDBType, QueryType } from '../types/types';
-import { commentsService } from "../domain/comments-service";
-import { ObjectId } from "mongodb";
+
+import { CommentDBType } from '../types/types';
 import { transferIdToString } from "../application/utils";
 
 export const postsRouter = Router({});
 
 class PostsController {
+  postsService: PostsService;
+  commentsService: CommentsService;
+
+  constructor(){
+  this.postsService = new PostsService();
+  this.commentsService = new CommentsService();
+  }
+
   async getPosts(req: Request, res: Response) {
-    const result = await postsService.getPosts(req.paginationParams);
+    const result = await this.postsService.getPosts(req.paginationParams);
     res.status(200).send(result);
   }
   async getPostById(req: Request, res: Response) {
     if (!req.isValidId) return res.status(404).send();
     const postId = new ObjectId(req.params.id);
-    let foundPost = await postsService.getPostById(postId);
+    let foundPost = await this.postsService.getPostById(postId);
     if (foundPost) {
       return res.status(200).send(transferIdToString(foundPost));
     } else {
@@ -36,7 +49,7 @@ class PostsController {
     const content = req.body.content;
     const bloggerId = req.body.bloggerId;
 
-    const newPost = await postsService.createPost(title, shortDescription, content, bloggerId);
+    const newPost = await this.postsService.createPost(title, shortDescription, content, bloggerId);
 
     return res.status(201).send(transferIdToString(newPost));
   }
@@ -49,7 +62,7 @@ class PostsController {
     const content = req.body.content;
     const bloggerId = req.body.bloggerId;
 
-    const isUpdated = await postsService.updatePost(postId, title, shortDescription, content, bloggerId)
+    const isUpdated = await this.postsService.updatePost(postId, title, shortDescription, content, bloggerId)
 
     if (isUpdated) {
       res.send(204);
@@ -61,7 +74,7 @@ class PostsController {
     if (!req.isValidId) return res.status(404).send();
 
     const postId = new ObjectId(req.params.id);
-    const isDeleted = await postsService.deletePost(postId);
+    const isDeleted = await this.postsService.deletePost(postId);
     if (isDeleted) {
       return res.send(204)
     } else {
@@ -75,10 +88,10 @@ class PostsController {
     const comment = req.body.content;
     const user = req.user;
 
-    let foundPost = await postsService.getPostById(postId);
+    let foundPost = await this.postsService.getPostById(postId);
 
     if (foundPost && user) {
-      const newComment: CommentDBType = await commentsService.createCommentForSelectedPost(comment, user.login, user._id, postId);
+      const newComment: CommentDBType = await this.commentsService.createCommentForSelectedPost(comment, user.login, user._id, postId);
       const { postId: postId2, ...params } = newComment;
 
       return res.status(201).send(transferIdToString(params));
@@ -89,13 +102,13 @@ class PostsController {
     if (!req.isValidId) return res.status(404).send();
 
     const postId = new ObjectId(req.params.id);
-    let foundPost = await postsService.getPostById(postId);
+    let foundPost = await this.postsService.getPostById(postId);
 
     if (!foundPost) {
       return res.status(404).send();
     }
 
-    const commentsWithPagination = await commentsService.getCommentsByPostId(postId, req.paginationParams);
+    const commentsWithPagination = await this.commentsService.getCommentsByPostId(postId, req.paginationParams);
     return res.status(200).send(commentsWithPagination)
   }
 }
@@ -105,12 +118,12 @@ const postsControllerInstance = new PostsController();
 //get all posts
 postsRouter.get('/',
   paginationMiddleware,
-  postsControllerInstance.getPosts);
+  postsControllerInstance.getPosts.bind(postsControllerInstance));
 
 //get POST by id
 postsRouter.get('/:id',
   isValidIdMiddleware,
-  postsControllerInstance.getPostById);
+  postsControllerInstance.getPostById.bind(postsControllerInstance));
 
 //create post
 postsRouter.post('/',
@@ -121,7 +134,7 @@ postsRouter.post('/',
   inputValidators.shortDescription,
   inputValidators.bloggerId,
   sumErrorsMiddleware,
-  postsControllerInstance.createPost);
+  postsControllerInstance.createPost.bind(postsControllerInstance));
 
 //update post
 postsRouter.put('/:id',
@@ -133,13 +146,13 @@ postsRouter.put('/:id',
   inputValidators.bloggerId,
   sumErrorsMiddleware,
   isValidIdMiddleware,
-  postsControllerInstance.updatePost);
+  postsControllerInstance.updatePost.bind(postsControllerInstance));
 
 //delete post
 postsRouter.delete('/:id',
   authMiddleWare,
   isValidIdMiddleware,
-  postsControllerInstance.deletePost);
+  postsControllerInstance.deletePost.bind(postsControllerInstance));
 
 // adding new comments to posts
 postsRouter.post('/:id/comments',
@@ -147,12 +160,12 @@ postsRouter.post('/:id/comments',
   inputValidators.comments,
   sumErrorsMiddleware,
   isValidIdMiddleware,
-  postsControllerInstance.createCommentForSelectedPost
+  postsControllerInstance.createCommentForSelectedPost.bind(postsControllerInstance)
 )
 
 // get selected post comments
 postsRouter.get('/:id/comments',
   isValidIdMiddleware,
   paginationMiddleware,
-  postsControllerInstance.getCommentsByPostId
+  postsControllerInstance.getCommentsByPostId.bind(postsControllerInstance)
 )

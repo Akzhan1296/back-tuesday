@@ -1,16 +1,22 @@
 import bcrypt from 'bcrypt'
 import { ObjectId } from 'mongodb';
 import { emailAdapter } from '../adapter/email-adapter';
-import { usersRepository } from '../repositories/users-db-repository';
+import { UsersRepository } from '../repositories/users-db-repository';
 import { UserDBType } from '../types/types';
-import { usersService } from './users-service';
+import { UsersService } from './users-service';
 
-class AuthService {
+export class AuthService {
+  usersRepository: UsersRepository;
+  usersService: UsersService;
+  constructor() {
+    this.usersRepository = new UsersRepository();
+    this.usersService = new UsersService();
+  }
+
   async generateHash(password: string) {
     const hash = await bcrypt.hash(password, 10)
     return hash;
   }
-
   /**
    *
    * @param email
@@ -18,7 +24,7 @@ class AuthService {
    * @return null if credentials are incorrect and admin entity in opposite case
    */
   async checkCredentials(userLogin: string, password: string): Promise<UserDBType | null> {
-    let user = await usersRepository.findByLogin(userLogin);
+    let user = await this.usersRepository.findByLogin(userLogin);
     if (!user) {
       return null
     }
@@ -30,25 +36,26 @@ class AuthService {
   }
   async registration(email: string, login: string, password: string) {
     const confirmCode = new ObjectId();
-    const newUser = await usersService.createUser(login, password, email, confirmCode);
+    const passwordHash = await this.generateHash(password);
+    const newUser = await this.usersService.createUser(login, password, email, confirmCode, passwordHash);
     if (newUser) {
       await emailAdapter.sendEmail(email, 'Lesson05', `<a href="http://localhost:3000/?code=${confirmCode}">Confirm email</a>`)
     }
   }
   async confirmRegistrationCode(code: ObjectId) {
-    usersService.confirmRegistrationCode(code)
+    this.usersService.confirmRegistrationCode(code)
   }
   async getUserByCode(confirmCode: ObjectId) {
-    return usersService.getUserByCode(confirmCode);
+    return this.usersService.getUserByCode(confirmCode);
   }
   async resendCode(email: string) {
-    const user = await usersService.findUserByEmail(email);
+    const user = await this.usersService.findUserByEmail(email);
     const confirmCode = new ObjectId();
     if (user) {
       await emailAdapter.sendEmail(email, 'Lesson05', `<a href="https://akzhanlesson04main.herokuapp.com?code=${confirmCode}">Confirm email</a>`)
-      await usersService.updateCode(email, confirmCode);
+      await this.usersService.updateCode(email, confirmCode);
     }
   }
 };
 
-export const authService = new AuthService();
+// export const authService = new AuthService();

@@ -1,14 +1,18 @@
 import { ObjectId } from 'mongodb';
-import { authService } from './auth-service';
 import { PaginationParamsType, UserDBType } from '../types/types';
-import { usersRepository } from '../repositories/users-db-repository';
+import { UsersRepository } from '../repositories/users-db-repository';
 
-class UsersService {
+export class UsersService {
+  usersRepository: UsersRepository;
+  constructor() {
+    this.usersRepository = new UsersRepository();
+  }
+
   async getUsers(paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;
 
-    const users = await usersRepository.getAllUsers(skip, pageSize);
-    const totalCount = await usersRepository.getAllUsersCount();
+    const users = await this.usersRepository.getAllUsers(skip, pageSize);
+    const totalCount = await this.usersRepository.getAllUsersCount();
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     return {
@@ -19,9 +23,7 @@ class UsersService {
       items: users.map(u => ({ id: u._id, login: u.login })),
     }
   }
-  async createUser(userLogin: string, userPassword: string, email: string, confirmCode: ObjectId | null,): Promise<UserDBType> {
-    const passwordHash = await authService.generateHash(userPassword);
-
+  async createUser(userLogin: string, userPassword: string, email: string, confirmCode: ObjectId | null, passwordHash: string): Promise<UserDBType> {
     const newUser = new UserDBType(
       new ObjectId(),
       userLogin,
@@ -31,26 +33,25 @@ class UsersService {
       false,
       email
     );
-
-    return usersRepository.createUser(newUser);
+    return this.usersRepository.createUser(newUser);
   }
   async findUserById(id: ObjectId): Promise<UserDBType | null> {
-    return usersRepository.findById(id);
+    return this.usersRepository.findById(id);
   }
   async updateCode(email: string, code: ObjectId): Promise<boolean> {
-    return usersRepository.updateCode(email, code);
+    return this.usersRepository.updateCode(email, code);
   }
   async findUserByEmail(email: string): Promise<UserDBType | null> {
-    return usersRepository.findUserByEmail(email);
+    return this.usersRepository.findUserByEmail(email);
   }
   async getUserByCode(confirmCode: ObjectId): Promise<UserDBType | null> {
-    return usersRepository.getUserByCode(confirmCode);
+    return this.usersRepository.getUserByCode(confirmCode);
   }
   async deleteUser(id: ObjectId): Promise<boolean> {
-    return usersRepository.deleteUser(id);
+    return this.usersRepository.deleteUser(id);
   }
   async confirmRegistrationCode(code: ObjectId): Promise<boolean> {
-    return usersRepository.confirmRegistrationCode(code);
+    return this.usersRepository.confirmRegistrationCode(code);
   }
 }
 

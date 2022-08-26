@@ -2,7 +2,7 @@ import { PostItemDBType, PostItemType } from '../types/types';
 import { ObjectId } from "mongodb";
 import { PostsModelClass } from './db';
 
-class PostsRepository {
+export class PostsRepository {
   async getPosts(skip: number, limit: number): Promise<PostItemDBType[]> {
     return await PostsModelClass.find({}).skip(skip).limit(limit).lean();
   }
@@ -39,9 +39,4 @@ class PostsRepository {
     const result = await PostsModelClass.deleteOne({ _id: id });
     return result.deletedCount === 1
   }
-  async drop() {
-    await PostsModelClass.collection.drop();
-  }
 }
-
-export const postsRepository = new PostsRepository();

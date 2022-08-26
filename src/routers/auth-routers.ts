@@ -1,20 +1,32 @@
 import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
 import { jwtUtility } from "../application/jwt-utility";
-import { authService } from "../domain/auth-service";
+
+//middleware
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
 import { hasUserMiddleware, isUserAlreadyConfirmedMiddleware } from "../middlewares/users-middleware";
 import { blockIpMiddleWare } from '../middlewares/block-ip-middleware';
 import { userAuthMiddleware, userRefreshMiddleware } from "../middlewares/auth-middleware";
-import { jwtService } from "../domain/jwt-service";
+
+//application
+import { JwtService } from "../domain/jwt-service";
+import { AuthService } from "../domain/auth-service";
+
 
 export const authRouter = Router({});
 
 authRouter.use(blockIpMiddleWare);
 
 class AuthController {
+  jwtService: JwtService;
+  authService: AuthService;
+  constructor() {
+    this.jwtService = new JwtService();
+    this.authService = new AuthService();
+  }
+
   async login(req: Request, res: Response) {
-    const user = await authService.checkCredentials(req.body.login, req.body.password)
+    const user = await this.authService.checkCredentials(req.body.login, req.body.password)
     if (user) {
       const token = await jwtUtility.createJWT(user)
       const refreshToken = await jwtUtility.createRefreshJWT(user);
@@ -22,7 +34,7 @@ class AuthController {
       const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshToken);
 
       if (payload) {
-        const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
+        const successfullyAddedRefreshToken = await this.jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
         if (successfullyAddedRefreshToken) {
           res.cookie('refreshToken', `Bearer ${refreshToken}`, { httpOnly: true, secure: false });
           res.status(200).send({ accessToken: token });
@@ -37,13 +49,13 @@ class AuthController {
     const login = req.body.login;
     const password = req.body.password;
 
-    await authService.registration(email, login, password);
+    await this.authService.registration(email, login, password);
 
     res.status(204).send();
   }
   async registrationConfirmation(req: Request, res: Response) {
     const code = new ObjectId(req.body.code);
-    const user = await authService.getUserByCode(code);
+    const user = await this.authService.getUserByCode(code);
 
     if (user && user.isConfirmed) {
       return res.status(400).send({
@@ -54,12 +66,12 @@ class AuthController {
       })
     }
 
-    await authService.confirmRegistrationCode(code);
+    await this.authService.confirmRegistrationCode(code);
     res.status(204).send();
   }
   async emailResending(req: Request, res: Response) {
     const email = req.body.email;
-    await authService.resendCode(email);
+    await this.authService.resendCode(email);
     res.status(204).send();
   }
   async me(req: Request, res: Response) {
@@ -75,7 +87,7 @@ class AuthController {
     const user = req.user;
     const tokenId = req.tokenId;
 
-    const deletedOldRefresh = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
+    const deletedOldRefresh = await this.jwtService.deleteRefreshToken(new ObjectId(tokenId));
 
     if (deletedOldRefresh && user) {
       const token = await jwtUtility.createJWT(user)
@@ -83,7 +95,7 @@ class AuthController {
 
       const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshToken);
       if (payload) {
-        const successfullyAddedRefreshToken = await jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
+        const successfullyAddedRefreshToken = await this.jwtService.addRefreshToken({ ...payload, tokenId: new ObjectId(payload.tokenId) });
         if (successfullyAddedRefreshToken) {
           res.cookie('refreshToken', `Bearer ${refreshToken}`, { httpOnly: true, secure: false })
           res.status(200).send({ accessToken: token });
@@ -96,7 +108,7 @@ class AuthController {
   async logout(req: Request, res: Response) {
     const tokenId = req.tokenId;
 
-    const deletedOldRefresh = await jwtService.deleteRefreshToken(new ObjectId(tokenId));
+    const deletedOldRefresh = await this.jwtService.deleteRefreshToken(new ObjectId(tokenId));
 
     if (deletedOldRefresh) {
       return res.status(204).send();
@@ -107,7 +119,7 @@ class AuthController {
 
 const authControllerInstance = new AuthController();
 
-authRouter.post('/login', authControllerInstance.login);
+authRouter.post('/login', authControllerInstance.login.bind(authControllerInstance));
 
 authRouter.post('/registration',
   hasUserMiddleware,
@@ -115,22 +127,22 @@ authRouter.post('/registration',
   inputValidators.login,
   inputValidators.password,
   sumErrorsMiddleware,
-  authControllerInstance.registration);
+  authControllerInstance.registration.bind(authControllerInstance));
 
 authRouter.post('/registration-confirmation',
   inputValidators.code,
   sumErrorsMiddleware,
-  authControllerInstance.registrationConfirmation);
+  authControllerInstance.registrationConfirmation.bind(authControllerInstance));
 
 authRouter.post('/registration-email-resending',
   isUserAlreadyConfirmedMiddleware,
   inputValidators.email,
   sumErrorsMiddleware,
-  authControllerInstance.emailResending);
+  authControllerInstance.emailResending.bind(authControllerInstance));
 
-authRouter.get('/me', userAuthMiddleware, authControllerInstance.me);
+authRouter.get('/me', userAuthMiddleware, authControllerInstance.me.bind(authControllerInstance));
 
 authRouter.post('/refresh-token', userRefreshMiddleware,
-  authControllerInstance.refreshToken);
+  authControllerInstance.refreshToken.bind(authControllerInstance));
 
-authRouter.post('/logout', userRefreshMiddleware, authControllerInstance.logout);
+authRouter.post('/logout', userRefreshMiddleware, authControllerInstance.logout.bind(authControllerInstance));
