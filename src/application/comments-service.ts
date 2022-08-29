@@ -4,9 +4,7 @@ import { CommentsRepository } from "../repositories/comments-db-repositry";
 import { PaginationParamsType, CommentType } from "../types/types";
 
 export class CommentsService {
-  commentsRepository: CommentsRepository;
-  constructor(){
-    this.commentsRepository = new CommentsRepository();
+  constructor(protected commentsRepository: CommentsRepository) {
   }
   async getCommentsByPostId(postId: ObjectId, paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;
@@ -54,5 +52,3 @@ export class CommentsService {
     return await this.commentsRepository.updateComment(id, updatedComment);
   }
 };
-
-// export const commentsService = new CommentsService()

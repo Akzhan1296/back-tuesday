@@ -4,9 +4,7 @@ import { BloggersRepository } from "../repositories/bloggers-db-repository";
 import { BloggerItemDBType, BloggerItemType, PaginationParamsType } from '../types/types';
 
 export class BloggersService {
-  bloggersRepository: BloggersRepository;
-  constructor(){
-    this.bloggersRepository = new BloggersRepository();
+  constructor(protected bloggersRepository: BloggersRepository) {
   }
   async getBloggers(paginationParams: PaginationParamsType) {
 
@@ -45,8 +43,4 @@ export class BloggersService {
   async deleteBlogger(id: ObjectId): Promise<boolean> {
     return await this.bloggersRepository.deleteBlogger(id);
   }
-}
-
-// export const bloggersService = new BloggersService();
-
-
+};

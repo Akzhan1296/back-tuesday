@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { jwtUtility } from "../utils/jwt-utility";
-import { jwtService } from "../application/jwt-service";
-import { usersService } from "../application/users-service";
+import { queryRepository } from "../repositories/query-db-repository";
 
 export const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
   if (req.headers.authorization) {
@@ -33,7 +32,7 @@ export const userAuthMiddleware = async (req: Request, res: Response, next: Next
   const userId = await jwtUtility.extractUserIdFromToken(token)
 
   if (userId) {
-    const user = await usersService.findUserById(userId);
+    const user = await queryRepository.findUserById(userId);
     req.user = user;
     next();
     return;
@@ -52,15 +51,15 @@ export const userRefreshMiddleware = async (req: Request, res: Response, next: N
   const userId = await jwtUtility.extractUserIdFromToken(refreshTokenFromCookie);
   const payload = await jwtUtility.extractPayloadFromRefreshToken(refreshTokenFromCookie);
 
-  if(!payload){
+  if (!payload) {
     return res.sendStatus(401);
   }
 
-  const refreshTokenIdFrom = await jwtService.getRefreshTokenId(new ObjectId(payload.tokenId));
+  const refreshTokenIdFrom = await queryRepository.getRefreshTokenId(new ObjectId(payload.tokenId));
 
 
   if (userId && refreshTokenIdFrom) {
-    const user = await usersService.findUserById(userId);
+    const user = await queryRepository.findUserById(userId);
     req.user = user;
     req.tokenId = payload.tokenId;
     next();

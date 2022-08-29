@@ -1,23 +1,14 @@
-import { Request, Response, Router } from "express";
+import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
+
+//utils
 import { transferIdToString } from "../utils/utils";
 
 //services
 import { CommentsService } from "../application/comments-service";
 
-//middleware
-import { userAuthMiddleware } from "../middlewares/auth-middleware";
-import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
-import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
-
-export const commentsRouter = Router({});
-
-class CommentsController {
-
-  commentsService: CommentsService;
-  constructor(){
-    this.commentsService = new CommentsService();
-  }
+export class CommentsController {
+  constructor(protected commentsService: CommentsService) { }
 
   async getCommentById(req: Request, res: Response) {
     if (!req.isValidId) return res.send(404);
@@ -79,18 +70,3 @@ class CommentsController {
     }
   }
 }
-
-const commentsControllerInstance = new CommentsController();
-
-commentsRouter.get('/:id',
-  isValidIdMiddleware,
-  commentsControllerInstance.getCommentById.bind(commentsControllerInstance));
-
-commentsRouter.put('/:id', userAuthMiddleware,
-  inputValidators.comments,
-  sumErrorsMiddleware,
-  isValidIdMiddleware,
-  commentsControllerInstance.updateComment.bind(commentsControllerInstance));
-
-commentsRouter.delete('/:id', userAuthMiddleware, isValidIdMiddleware,
-  commentsControllerInstance.deleteComment.bind(commentsControllerInstance));

@@ -3,10 +3,7 @@ import { JwtRepository } from '../repositories/jwt-db-repository';
 import { RefeshTokenType } from '../types/types';
 
 export class JwtService {
-  jwtRepository: JwtRepository;
-  constructor(){
-    this.jwtRepository = new JwtRepository();
-  }
+  constructor(protected jwtRepository: JwtRepository){}
   async addRefreshToken(tokenData: RefeshTokenType): Promise<boolean> {
     return this.jwtRepository.addRefreshToken(tokenData);
   }
@@ -17,6 +14,4 @@ export class JwtService {
     return this.jwtRepository.deleteRefreshToken(tokenId);
   }
   async deleteAllRefreshTokens() {}
-}
-
-export const jwtService = new JwtService()
+};

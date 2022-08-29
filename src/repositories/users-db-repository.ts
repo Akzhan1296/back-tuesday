@@ -19,7 +19,7 @@ export class UsersRepository {
     const result = await UserModelClass.updateOne({ email }, { ...confirmCode });
     return result.matchedCount === 1
   }
-  async findById(id: ObjectId): Promise<UserDBType | null> {
+  async findUserById(id: ObjectId): Promise<UserDBType | null> {
     const user = await UserModelClass.findOne({ _id: id })
     return user;
   }
@@ -41,6 +41,4 @@ export class UsersRepository {
     const result = await UserModelClass.updateOne({ confirmCode: code }, { $set: { isConfirmed: true } });
     return result.matchedCount === 1
   }
-}
-
-export const usersRepository = new UsersRepository();
+};

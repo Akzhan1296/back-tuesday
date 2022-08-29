@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { usersRepository } from "../repositories/users-db-repository";
+import { queryRepository } from "../repositories/query-db-repository";
 
 export const hasUserMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
   const email = req.body.email;
   const login = req.body.login;
 
-  const getUserByLogin = await usersRepository.findByLogin(login);
+  const getUserByLogin = await queryRepository.findByLogin(login);
 
   if (getUserByLogin) {
     return res.status(400).send({
@@ -17,7 +17,7 @@ export const hasUserMiddleware = async (req: Request, res: Response, next: NextF
     });
   }
 
-  const getUserByEmail = await usersRepository.findUserByEmail(email);
+  const getUserByEmail = await queryRepository.findUserByEmail(email);
 
   if (getUserByEmail) {
     return res.status(400).send({
@@ -34,7 +34,7 @@ export const hasUserMiddleware = async (req: Request, res: Response, next: NextF
 export const isUserAlreadyConfirmedMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const email = req.body.email;
 
-  const getUserByEmail = await usersRepository.findUserByEmail(email);
+  const getUserByEmail = await queryRepository.findUserByEmail(email);
 
   if (getUserByEmail && getUserByEmail.isConfirmed) {
     return res.status(400).send({

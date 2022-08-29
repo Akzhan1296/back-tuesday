@@ -1,29 +1,14 @@
-import { Request, Response, Router } from "express";
+import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { jwtUtility } from "../utils/jwt-utility";
-
-//middleware
-import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
-import { hasUserMiddleware, isUserAlreadyConfirmedMiddleware } from "../middlewares/users-middleware";
-import { blockIpMiddleWare } from '../middlewares/block-ip-middleware';
-import { userAuthMiddleware, userRefreshMiddleware } from "../middlewares/auth-middleware";
 
 //application
 import { JwtService } from "../application/jwt-service";
 import { AuthService } from "../application/auth-service";
 
 
-export const authRouter = Router({});
-
-authRouter.use(blockIpMiddleWare);
-
-class AuthController {
-  jwtService: JwtService;
-  authService: AuthService;
-  constructor() {
-    this.jwtService = new JwtService();
-    this.authService = new AuthService();
-  }
+export class AuthController {
+  constructor(protected jwtService: JwtService, protected authService: AuthService) {}
 
   async login(req: Request, res: Response) {
     const user = await this.authService.checkCredentials(req.body.login, req.body.password)
@@ -116,33 +101,3 @@ class AuthController {
     res.status(401).send();
   }
 }
-
-const authControllerInstance = new AuthController();
-
-authRouter.post('/login', authControllerInstance.login.bind(authControllerInstance));
-
-authRouter.post('/registration',
-  hasUserMiddleware,
-  inputValidators.email,
-  inputValidators.login,
-  inputValidators.password,
-  sumErrorsMiddleware,
-  authControllerInstance.registration.bind(authControllerInstance));
-
-authRouter.post('/registration-confirmation',
-  inputValidators.code,
-  sumErrorsMiddleware,
-  authControllerInstance.registrationConfirmation.bind(authControllerInstance));
-
-authRouter.post('/registration-email-resending',
-  isUserAlreadyConfirmedMiddleware,
-  inputValidators.email,
-  sumErrorsMiddleware,
-  authControllerInstance.emailResending.bind(authControllerInstance));
-
-authRouter.get('/me', userAuthMiddleware, authControllerInstance.me.bind(authControllerInstance));
-
-authRouter.post('/refresh-token', userRefreshMiddleware,
-  authControllerInstance.refreshToken.bind(authControllerInstance));
-
-authRouter.post('/logout', userRefreshMiddleware, authControllerInstance.logout.bind(authControllerInstance));

@@ -3,19 +3,19 @@ import cors from 'cors'
 import bodyParser from "body-parser";
 
 //routers
-import { bloggersRouter } from "./routers/bloggers-routers";
-import { postsRouter } from "./routers/posts-routers";
-import { authRouter } from './routers/auth-routers'
-import { usersRouter } from './routers/users-routers';
+import { bloggersRouter } from "./routers/bloggers-router";
+import { commentsRouter } from './routers/comments-router';
+import { postsRouter } from "./routers/posts-router";
+import { authRouter } from './routers/auth-router'
+import { usersRouter } from './routers/users-router';
 import { deleteRouter } from './routers/delete-router';
 
 //middlewares
-import { countRequestsMiddleWare } from './middlewares/counter-middleware';
-import { checkContentTypeMiddleWare } from './middlewares/content-type-check-middleware'
+// import { countRequestsMiddleWare } from './middlewares/counter-middleware';
+// import { checkContentTypeMiddleWare } from './middlewares/content-type-check-middleware'
 
 //dataBase
 import { runDb } from './repositories/db'
-import { commentsRouter } from './routers/comments-routers';
 
 import cookieParser from 'cookie-parser';
 const app = express()

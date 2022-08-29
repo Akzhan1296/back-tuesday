@@ -6,12 +6,8 @@ import { UserDBType } from '../types/types';
 import { UsersService } from './users-service';
 
 export class AuthService {
-  usersRepository: UsersRepository;
-  usersService: UsersService;
-  constructor() {
-    this.usersRepository = new UsersRepository();
-    this.usersService = new UsersService();
-  }
+
+  constructor(protected usersService: UsersService, protected usersRepository: UsersRepository) {}
 
   async generateHash(password: string) {
     const hash = await bcrypt.hash(password, 10)
@@ -57,5 +53,3 @@ export class AuthService {
     }
   }
 };
-
-// export const authService = new AuthService();

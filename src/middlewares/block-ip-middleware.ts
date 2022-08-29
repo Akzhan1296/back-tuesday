@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { ipRepostitory } from '../repositories/ip-db-repository';
-// const arr = [''];
 
 export const blockIpMiddleWare = async (req: Request, res: Response, next: NextFunction) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;

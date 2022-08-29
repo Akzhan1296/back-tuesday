@@ -2,15 +2,8 @@ import { Request, Response, Router } from "express";
 
 import { DeleteDataRepository } from "../repositories/delete-data-db-repository";
 
-
-export const deleteRouter = Router({});
-
-class DeleteController {
-  deleteDataRepository: DeleteDataRepository;
-
-  constructor(){
-    this.deleteDataRepository = new DeleteDataRepository();
-  }
+export class DeleteController {
+  constructor(protected deleteDataRepository: DeleteDataRepository) { }
 
   async deleteAllData(req: Request, res: Response) {
     await this.deleteDataRepository.dropBloggers();
@@ -23,7 +16,3 @@ class DeleteController {
     return res.status(204).send();
   }
 }
-
-const deleteControllerInstance = new DeleteController();
-
-deleteRouter.delete('/all-data', deleteControllerInstance.deleteAllData.bind(deleteControllerInstance));

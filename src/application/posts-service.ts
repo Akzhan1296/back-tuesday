@@ -4,9 +4,7 @@ import { PostsRepository } from '../repositories/posts-db-repository';
 import { PaginationParamsType, PostItemType } from '../types/types';
 
 export class PostsService {
-  postsRepository: PostsRepository;
-  constructor() {
-    this.postsRepository = new PostsRepository();
+  constructor(protected postsRepository: PostsRepository) {
   }
   async getPosts(paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;
@@ -66,5 +64,3 @@ export class PostsService {
     return await this.postsRepository.deletePost(id);
   }
 }
-
-// export const postsService = new PostsService();

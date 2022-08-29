@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator'
 import { NextFunction, Request, Response } from "express";
-import { bloggersRepository } from "../repositories/bloggers-db-repository";
+import { queryRepository } from "../repositories/query-db-repository";
 import { ObjectId } from 'mongodb';
 
 
@@ -12,7 +12,7 @@ export const inputValidators = {
   youtubeUrl: body('youtubeUrl').trim().notEmpty().isLength({ max: 100 }).matches('^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$'),
   login: body('login').notEmpty().isLength({ min: 3, max: 10 }),
   password: body('password').notEmpty().isLength({ min: 6, max: 20 }),
-  comments: body('content').trim().notEmpty().isLength({min: 20, max: 300}),
+  comments: body('content').trim().notEmpty().isLength({ min: 20, max: 300 }),
   bloggerId: body('bloggerId').trim().notEmpty(),
   email: body('email').trim().notEmpty().isLength({ max: 100 }).isEmail(),
   code: body('code').isMongoId(),
@@ -34,8 +34,8 @@ export const sumErrorsMiddleware = (req: Request, res: Response, next: NextFunct
 export const hasBloggerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const bloggerId = new ObjectId(req.body.bloggerId);
-    const bloggers = await bloggersRepository.getBloggerById(bloggerId);
-  
+    const bloggers = await queryRepository.getBloggerById(bloggerId);
+
     if (!bloggers) {
       res.status(400).json({
         errorsMessages: [{
@@ -52,8 +52,8 @@ export const hasBloggerMiddleware = async (req: Request, res: Response, next: Ne
         message: "incorrect id",
         field: "bloggerId"
       }]
-    }).send(); 
+    }).send();
   }
-  
+
 
 }

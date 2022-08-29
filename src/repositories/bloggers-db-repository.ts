@@ -32,7 +32,4 @@ export class BloggersRepository {
   }
 }
 
-export const bloggersRepository = new BloggersRepository();
-
-
 

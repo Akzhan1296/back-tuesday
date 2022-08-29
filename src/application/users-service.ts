@@ -3,10 +3,7 @@ import { PaginationParamsType, UserDBType } from '../types/types';
 import { UsersRepository } from '../repositories/users-db-repository';
 
 export class UsersService {
-  usersRepository: UsersRepository;
-  constructor() {
-    this.usersRepository = new UsersRepository();
-  }
+  constructor(protected usersRepository: UsersRepository) { }
 
   async getUsers(paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;
@@ -36,7 +33,7 @@ export class UsersService {
     return this.usersRepository.createUser(newUser);
   }
   async findUserById(id: ObjectId): Promise<UserDBType | null> {
-    return this.usersRepository.findById(id);
+    return this.usersRepository.findUserById(id);
   }
   async updateCode(email: string, code: ObjectId): Promise<boolean> {
     return this.usersRepository.updateCode(email, code);
@@ -53,6 +50,4 @@ export class UsersService {
   async confirmRegistrationCode(code: ObjectId): Promise<boolean> {
     return this.usersRepository.confirmRegistrationCode(code);
   }
-}
-
-export const usersService = new UsersService();
+};
