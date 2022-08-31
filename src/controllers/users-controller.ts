@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { ObjectId } from "mongodb";
 
 //service
 import { UsersService } from "../application/users-service";
-import { AuthService } from '../application/auth-service';
+import { generateHash } from "../utils/utils";
 
+@injectable()
 export class UsersController {
-  constructor(protected usersService: UsersService, protected authService: AuthService) {
+  constructor(@inject(UsersService) protected usersService: UsersService) {
   }
 
   async getUsers(req: Request, res: Response) {
@@ -14,7 +16,7 @@ export class UsersController {
     return res.status(200).send(usersWithPagination)
   }
   async createUser(req: Request, res: Response) {
-    const passwordHash = await this.authService.generateHash(req.body.password);
+    const passwordHash = await generateHash(req.body.password);
     const newUser = await this.usersService.createUser(req.body.login, req.body.password, '', null, passwordHash);
     return res.status(201).send({ login: newUser.login, id: newUser._id });
   }

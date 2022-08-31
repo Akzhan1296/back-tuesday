@@ -6,9 +6,11 @@ import { transferIdToString } from "../utils/utils";
 
 //services
 import { CommentsService } from "../application/comments-service";
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class CommentsController {
-  constructor(protected commentsService: CommentsService) { }
+  constructor(@inject(CommentsService) protected commentsService: CommentsService) { }
 
   async getCommentById(req: Request, res: Response) {
     if (!req.isValidId) return res.send(404);

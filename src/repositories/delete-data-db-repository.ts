@@ -1,6 +1,8 @@
+import { injectable } from 'inversify';
 import { BloggersModelClass, IpModelClass, CommentModelClass, RefreshTokenClass, PostsModelClass, UserModelClass } from './db';
 
 
+@injectable()
 export class DeleteDataRepository {
   async dropBloggers() {
     await BloggersModelClass.collection.drop();

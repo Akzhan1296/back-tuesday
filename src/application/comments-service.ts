@@ -2,9 +2,11 @@ import { ObjectId } from "mongodb";
 import { transferIdToString } from "../utils/utils";
 import { CommentsRepository } from "../repositories/comments-db-repositry";
 import { PaginationParamsType, CommentType } from "../types/types";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class CommentsService {
-  constructor(protected commentsRepository: CommentsRepository) {
+  constructor(@inject(CommentsRepository) protected commentsRepository: CommentsRepository) {
   }
   async getCommentsByPostId(postId: ObjectId, paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;

@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { commentsControllerInstance } from "../composition-roots/comments-root";
+import { commentsContainer } from "../composition-roots/comments-root";
+import { CommentsController } from "../controllers/comments-controller";
 
 //middleware
 import { userAuthMiddleware } from "../middlewares/auth-middleware";
@@ -8,16 +9,17 @@ import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 
 
 export const commentsRouter = Router({});
+const commentsController = commentsContainer.resolve(CommentsController);
 
 commentsRouter.get('/:id',
     isValidIdMiddleware,
-    commentsControllerInstance.getCommentById.bind(commentsControllerInstance));
+    commentsController.getCommentById.bind(commentsController));
 
 commentsRouter.put('/:id', userAuthMiddleware,
     inputValidators.comments,
     sumErrorsMiddleware,
     isValidIdMiddleware,
-    commentsControllerInstance.updateComment.bind(commentsControllerInstance));
+    commentsController.updateComment.bind(commentsController));
 
 commentsRouter.delete('/:id', userAuthMiddleware, isValidIdMiddleware,
-    commentsControllerInstance.deleteComment.bind(commentsControllerInstance));
+    commentsController.deleteComment.bind(commentsController));

@@ -1,7 +1,9 @@
+import { injectable } from "inversify";
 import { ObjectId } from "mongodb";
 import { UserDBType } from "../types/types";
 import { UserModelClass } from "./db";
 
+@injectable()
 export class UsersRepository {
   async createUser(newUser: UserDBType): Promise<UserDBType> {
     await UserModelClass.insertMany(newUser);

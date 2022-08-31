@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
+
 import { ObjectId } from "mongodb";
 
 //services
@@ -8,9 +10,9 @@ import { CommentsService } from "../application/comments-service";
 import { CommentDBType } from '../types/types';
 import { transferIdToString } from "../utils/utils";
 
-
+@injectable()
 export class PostsController {
-  constructor(protected postsService: PostsService, protected commentsService: CommentsService) {}
+  constructor(@inject(PostsService) protected postsService: PostsService, @inject(CommentsService) protected commentsService: CommentsService) { }
 
   async getPosts(req: Request, res: Response) {
     const result = await this.postsService.getPosts(req.paginationParams);

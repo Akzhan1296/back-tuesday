@@ -2,9 +2,11 @@ import { ObjectId } from 'mongodb';
 import { transferIdToString } from '../utils/utils';
 import { PostsRepository } from '../repositories/posts-db-repository';
 import { PaginationParamsType, PostItemType } from '../types/types';
+import { injectable, inject } from 'inversify';
 
+@injectable()
 export class PostsService {
-  constructor(protected postsRepository: PostsRepository) {
+  constructor(@inject(PostsRepository) protected postsRepository: PostsRepository) {
   }
   async getPosts(paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;

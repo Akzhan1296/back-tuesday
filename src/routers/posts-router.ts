@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { postsControllerInstance } from '../composition-roots/posts-root';
+import { postsContainer } from '../composition-roots/posts-root';
 
 //middleware
 import {
@@ -11,19 +11,21 @@ import {
 import { authMiddleWare, userAuthMiddleware } from "../middlewares/auth-middleware";
 import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 import { paginationMiddleware } from "../middlewares/pagination-middleware"
+import { PostsController } from '../controllers/posts-controller';
 
 
 export const postsRouter = Router({});
+const postsController = postsContainer.resolve(PostsController);
 
 //get all posts
 postsRouter.get('/',
     paginationMiddleware,
-    postsControllerInstance.getPosts.bind(postsControllerInstance));
+    postsController.getPosts.bind(postsController));
 
 //get POST by id
 postsRouter.get('/:id',
     isValidIdMiddleware,
-    postsControllerInstance.getPostById.bind(postsControllerInstance));
+    postsController.getPostById.bind(postsController));
 
 //create post
 postsRouter.post('/',
@@ -34,7 +36,7 @@ postsRouter.post('/',
     inputValidators.shortDescription,
     inputValidators.bloggerId,
     sumErrorsMiddleware,
-    postsControllerInstance.createPost.bind(postsControllerInstance));
+    postsController.createPost.bind(postsController));
 
 //update post
 postsRouter.put('/:id',
@@ -46,13 +48,13 @@ postsRouter.put('/:id',
     inputValidators.bloggerId,
     sumErrorsMiddleware,
     isValidIdMiddleware,
-    postsControllerInstance.updatePost.bind(postsControllerInstance));
+    postsController.updatePost.bind(postsController));
 
 //delete post
 postsRouter.delete('/:id',
     authMiddleWare,
     isValidIdMiddleware,
-    postsControllerInstance.deletePost.bind(postsControllerInstance));
+    postsController.deletePost.bind(postsController));
 
 // adding new comments to posts
 postsRouter.post('/:id/comments',
@@ -60,12 +62,12 @@ postsRouter.post('/:id/comments',
     inputValidators.comments,
     sumErrorsMiddleware,
     isValidIdMiddleware,
-    postsControllerInstance.createCommentForSelectedPost.bind(postsControllerInstance)
+    postsController.createCommentForSelectedPost.bind(postsController)
 )
 
 // get selected post comments
 postsRouter.get('/:id/comments',
     isValidIdMiddleware,
     paginationMiddleware,
-    postsControllerInstance.getCommentsByPostId.bind(postsControllerInstance)
+    postsController.getCommentsByPostId.bind(postsController)
 )

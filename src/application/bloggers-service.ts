@@ -2,9 +2,11 @@ import { ObjectId } from "mongodb";
 import { transferIdToString } from "../utils/utils";
 import { BloggersRepository } from "../repositories/bloggers-db-repository";
 import { BloggerItemDBType, BloggerItemType, PaginationParamsType } from '../types/types';
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class BloggersService {
-  constructor(protected bloggersRepository: BloggersRepository) {
+  constructor(@inject(BloggersRepository) protected bloggersRepository: BloggersRepository) {
   }
   async getBloggers(paginationParams: PaginationParamsType) {
 

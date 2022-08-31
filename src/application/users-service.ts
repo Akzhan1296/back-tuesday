@@ -1,9 +1,11 @@
 import { ObjectId } from 'mongodb';
 import { PaginationParamsType, UserDBType } from '../types/types';
 import { UsersRepository } from '../repositories/users-db-repository';
+import { injectable, inject } from 'inversify';
 
+@injectable()
 export class UsersService {
-  constructor(protected usersRepository: UsersRepository) { }
+  constructor(@inject(UsersRepository) protected usersRepository: UsersRepository) { }
 
   async getUsers(paginationParams: PaginationParamsType) {
     const { pageNumber, pageSize, skip } = paginationParams;

@@ -1,7 +1,9 @@
 import { PostItemDBType, PostItemType } from '../types/types';
 import { ObjectId } from "mongodb";
 import { PostsModelClass } from './db';
+import { injectable } from 'inversify';
 
+@injectable()
 export class PostsRepository {
   async getPosts(skip: number, limit: number): Promise<PostItemDBType[]> {
     return await PostsModelClass.find({}).skip(skip).limit(limit).lean();

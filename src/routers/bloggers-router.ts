@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { bloggerControllerInstance } from '../composition-roots/bloggers-root';
-
+import { bloggersContainer } from '../composition-roots/bloggers-root';
+import { BloggerController } from '../controllers/bloggers-controller';
 //middleware
 import { authMiddleWare } from "../middlewares/auth-middleware";
 import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
@@ -8,22 +8,23 @@ import { paginationMiddleware } from "../middlewares/pagination-middleware";
 import { inputValidators, sumErrorsMiddleware } from '../middlewares/input-validator-middleware';
 
 export const bloggersRouter = Router({});
+const bloggerController = bloggersContainer.resolve(BloggerController);
 
 //get all bloggers
 bloggersRouter.get('/',
   paginationMiddleware,
-  bloggerControllerInstance.getBloggers.bind(bloggerControllerInstance));
+  bloggerController.getBloggers.bind(bloggerController));
 
 //get blogger by id
 bloggersRouter.get('/:id',
   isValidIdMiddleware,
-  bloggerControllerInstance.getBloggerById.bind(bloggerControllerInstance))
+  bloggerController.getBloggerById.bind(bloggerController))
 
 //get specific blogger POSTS
 bloggersRouter.get('/:id/posts',
   isValidIdMiddleware,
   paginationMiddleware,
-  bloggerControllerInstance.getPostByBloggerId.bind(bloggerControllerInstance))
+  bloggerController.getPostByBloggerId.bind(bloggerController))
 
 //create blogger +++
 bloggersRouter.post('/',
@@ -31,7 +32,7 @@ bloggersRouter.post('/',
   inputValidators.name,
   inputValidators.youtubeUrl,
   sumErrorsMiddleware,
-  bloggerControllerInstance.createBlogger.bind(bloggerControllerInstance))
+  bloggerController.createBlogger.bind(bloggerController))
 
 // create POST for specific blogger 
 bloggersRouter.post('/:id/posts',
@@ -41,7 +42,7 @@ bloggersRouter.post('/:id/posts',
   inputValidators.shortDescription,
   sumErrorsMiddleware,
   isValidIdMiddleware,
-  bloggerControllerInstance.createPostForBlogger.bind(bloggerControllerInstance))
+  bloggerController.createPostForBlogger.bind(bloggerController))
 
 //update blogger +++
 bloggersRouter.put('/:id',
@@ -50,11 +51,11 @@ bloggersRouter.put('/:id',
   inputValidators.youtubeUrl,
   sumErrorsMiddleware,
   isValidIdMiddleware,
-  bloggerControllerInstance.updateBlogger.bind(bloggerControllerInstance))
+  bloggerController.updateBlogger.bind(bloggerController))
 
 // delete blogger +++
 bloggersRouter.delete('/:id',
   authMiddleWare,
   isValidIdMiddleware,
-  bloggerControllerInstance.updateBlogger.bind(bloggerControllerInstance))
+  bloggerController.updateBlogger.bind(bloggerController))
 

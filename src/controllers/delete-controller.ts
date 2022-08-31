@@ -1,9 +1,10 @@
-import { Request, Response, Router } from "express";
-
+import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { DeleteDataRepository } from "../repositories/delete-data-db-repository";
 
+@injectable()
 export class DeleteController {
-  constructor(protected deleteDataRepository: DeleteDataRepository) { }
+  constructor(@inject(DeleteDataRepository) protected deleteDataRepository: DeleteDataRepository) { }
 
   async deleteAllData(req: Request, res: Response) {
     await this.deleteDataRepository.dropBloggers();

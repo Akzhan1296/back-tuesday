@@ -1,7 +1,9 @@
 import { BloggersModelClass } from './db';
 import { BloggerItemDBType, BloggerItemType } from '../types/types';
 import { ObjectId } from 'mongodb';
+import { injectable } from 'inversify';
 
+@injectable()
 export class BloggersRepository {
   async getBloggers(skip: number, limit: number, filter: BloggerItemType): Promise<BloggerItemDBType[]> {
     return await BloggersModelClass.find(filter).skip(skip).limit(limit).lean();

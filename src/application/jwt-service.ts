@@ -1,9 +1,11 @@
+import { injectable, inject } from 'inversify';
 import { ObjectId } from 'mongodb';
 import { JwtRepository } from '../repositories/jwt-db-repository';
 import { RefeshTokenType } from '../types/types';
 
+@injectable()
 export class JwtService {
-  constructor(protected jwtRepository: JwtRepository){}
+  constructor(@inject(JwtRepository) protected jwtRepository: JwtRepository){}
   async addRefreshToken(tokenData: RefeshTokenType): Promise<boolean> {
     return this.jwtRepository.addRefreshToken(tokenData);
   }

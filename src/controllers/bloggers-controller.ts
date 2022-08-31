@@ -7,9 +7,11 @@ import { transferIdToString } from "../utils/utils";
 //services
 import { BloggersService } from "../application/bloggers-service";
 import { PostsService } from '../application/posts-service';
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class BloggerController {
-  constructor(protected bloggersService: BloggersService, protected postsService: PostsService) {
+  constructor(@inject(BloggersService) protected bloggersService: BloggersService, @inject(PostsService) protected postsService: PostsService) {
   }
 
   async getBloggers(req: Request, res: Response) {

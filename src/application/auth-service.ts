@@ -1,18 +1,17 @@
 import bcrypt from 'bcrypt'
+import { injectable, inject } from 'inversify';
 import { ObjectId } from 'mongodb';
 import { emailAdapter } from '../adapter/email-adapter';
 import { UsersRepository } from '../repositories/users-db-repository';
 import { UserDBType } from '../types/types';
+import { generateHash } from '../utils/utils';
 import { UsersService } from './users-service';
+
+@injectable()
 
 export class AuthService {
 
-  constructor(protected usersService: UsersService, protected usersRepository: UsersRepository) {}
-
-  async generateHash(password: string) {
-    const hash = await bcrypt.hash(password, 10)
-    return hash;
-  }
+  constructor(@inject(UsersService) protected usersService: UsersService, @inject(UsersRepository) protected usersRepository: UsersRepository) {}
   /**
    *
    * @param email
@@ -32,7 +31,7 @@ export class AuthService {
   }
   async registration(email: string, login: string, password: string) {
     const confirmCode = new ObjectId();
-    const passwordHash = await this.generateHash(password);
+    const passwordHash = await generateHash(password);
     const newUser = await this.usersService.createUser(login, password, email, confirmCode, passwordHash);
     if (newUser) {
       await emailAdapter.sendEmail(email, 'Lesson05', `<a href="http://localhost:3000/?code=${confirmCode}">Confirm email</a>`)

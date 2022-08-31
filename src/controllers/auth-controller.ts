@@ -5,10 +5,12 @@ import { jwtUtility } from "../utils/jwt-utility";
 //application
 import { JwtService } from "../application/jwt-service";
 import { AuthService } from "../application/auth-service";
+import { injectable, inject } from "inversify";
 
 
+@injectable()
 export class AuthController {
-  constructor(protected jwtService: JwtService, protected authService: AuthService) {}
+  constructor(@inject(JwtService) protected jwtService: JwtService, @inject(AuthService) protected authService: AuthService) {}
 
   async login(req: Request, res: Response) {
     const user = await this.authService.checkCredentials(req.body.login, req.body.password)

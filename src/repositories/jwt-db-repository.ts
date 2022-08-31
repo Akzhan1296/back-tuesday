@@ -3,7 +3,9 @@ import {
 } from './db';
 import { RefeshTokenType } from "../types/types";
 import { ObjectId } from 'mongodb';
+import { injectable } from 'inversify';
 
+@injectable()
 export class JwtRepository {
   async addRefreshToken(tokenData: RefeshTokenType): Promise<boolean> {
     await RefreshTokenClass.insertMany(tokenData);

@@ -1,7 +1,9 @@
+import { injectable } from "inversify";
 import { ObjectId } from "mongodb";
 import { CommentType, CommentDBType } from "../types/types";
 import { CommentModelClass } from "./db";
 
+@injectable()
 export class CommentsRepository {
   async createCommentForSelectedPost(comment: CommentType): Promise<CommentDBType> {
     const result = await CommentModelClass.insertMany(comment);

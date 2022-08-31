@@ -1,7 +1,9 @@
 import { BloggersModelClass, RefreshTokenClass, UserModelClass } from './db';
 import { BloggerItemDBType, UserDBType } from '../types/types';
 import { ObjectId } from 'mongodb';
+import { injectable } from 'inversify';
 
+@injectable()
 class QueryRepository {
   async getBloggerById(id: ObjectId): Promise<BloggerItemDBType | null> {
     let blogger = await BloggersModelClass.findOne({ _id: id }).lean();

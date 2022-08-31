@@ -1,5 +1,7 @@
+import { injectable } from 'inversify';
 import { IpModelClass } from './db'
 
+@injectable()
 class IpRepostitory {
   async addIp(ip: string, path: string, date: number) {
     await IpModelClass.insertMany({ ip, path, date });
