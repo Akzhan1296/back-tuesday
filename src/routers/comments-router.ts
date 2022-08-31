@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { commentsContainer } from "../composition-roots/comments-root";
+import { container } from "../composition-roots/container";
 import { CommentsController } from "../controllers/comments-controller";
 
 //middleware
@@ -9,7 +9,7 @@ import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 
 
 export const commentsRouter = Router({});
-const commentsController = commentsContainer.resolve(CommentsController);
+const commentsController = container.resolve(CommentsController);
 
 commentsRouter.get('/:id',
     isValidIdMiddleware,

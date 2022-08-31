@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { postsContainer } from '../composition-roots/posts-root';
+import { container } from "../composition-roots/container";
 
 //middleware
 import {
@@ -15,7 +15,7 @@ import { PostsController } from '../controllers/posts-controller';
 
 
 export const postsRouter = Router({});
-const postsController = postsContainer.resolve(PostsController);
+const postsController = container.resolve(PostsController);
 
 //get all posts
 postsRouter.get('/',

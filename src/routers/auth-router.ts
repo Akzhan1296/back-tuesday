@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authContainer } from "../composition-roots/auth-root";
+import { container } from "../composition-roots/container";
 import { AuthController } from "../controllers/auth-controller";
 
 //middleware
@@ -9,7 +9,7 @@ import { userAuthMiddleware, userRefreshMiddleware } from "../middlewares/auth-m
 import { blockIpMiddleWare } from "../middlewares/block-ip-middleware";
 
 export const authRouter = Router({});
-const authController = authContainer.resolve(AuthController);
+const authController = container.resolve(AuthController);
 
 authRouter.use(blockIpMiddleWare);
 

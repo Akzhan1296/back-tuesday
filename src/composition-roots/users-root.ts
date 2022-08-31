@@ -8,7 +8,10 @@ import { UsersRepository } from "../repositories/users-db-repository";
 // export const usersService = new UsersService(usersRepository);
 // export const usersControllerInstance = new UsersController(usersService);
 
-export const usersContainer = new Container();
-usersContainer.bind(UsersController).to(UsersController);
-usersContainer.bind(UsersService).to(UsersService);
-usersContainer.bind(UsersRepository).to(UsersRepository);
+export const usersIoCRegistration = (container: Container) => {
+  container.bind(UsersController).to(UsersController);
+  container.bind(UsersService).to(UsersService);
+  container.bind(UsersRepository).to(UsersRepository);
+}
+
+

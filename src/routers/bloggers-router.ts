@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { bloggersContainer } from '../composition-roots/bloggers-root';
+import { container } from "../composition-roots/container";
 import { BloggerController } from '../controllers/bloggers-controller';
 //middleware
 import { authMiddleWare } from "../middlewares/auth-middleware";
@@ -8,7 +8,7 @@ import { paginationMiddleware } from "../middlewares/pagination-middleware";
 import { inputValidators, sumErrorsMiddleware } from '../middlewares/input-validator-middleware';
 
 export const bloggersRouter = Router({});
-const bloggerController = bloggersContainer.resolve(BloggerController);
+const bloggerController = container.resolve(BloggerController);
 
 //get all bloggers
 bloggersRouter.get('/',

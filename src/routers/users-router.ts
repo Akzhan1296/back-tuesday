@@ -1,6 +1,6 @@
 //middleware
 import { Router } from "express";
-import { usersContainer } from "../composition-roots/users-root";
+import { container } from "../composition-roots/container";
 import { UsersController } from "../controllers/users-controller";
 import { authMiddleWare } from "../middlewares/auth-middleware";
 import { inputValidators, sumErrorsMiddleware } from "../middlewares/input-validator-middleware";
@@ -8,7 +8,7 @@ import { isValidIdMiddleware } from "../middlewares/object-id-middleware";
 import { paginationMiddleware } from "../middlewares/pagination-middleware";
 
 export const usersRouter = Router({});
-const usersController = usersContainer.resolve(UsersController);
+const usersController = container.resolve(UsersController);
 
 // get all users
 usersRouter.get('/',
